@@ -2,7 +2,7 @@
 ; SimonAssembly.asm
 ;
 ; Created: 13/05/2023 15:17:08
-; Author : ArnoD
+; Author : Arno, Rogier
 ;
 
 .include "m328pdef.inc"		;Load addressess of IO registers
@@ -10,6 +10,14 @@
 ; boot
 .org 0x000
 rjmp init
+
+.macro shift_reg
+	sbrc r16, @0 ; bit # of 16 to shift into register
+	sbi portb, 3
+	cbi portb, 5
+	sbi portb, 5
+	cbi portb, 3
+.endmacro
 
 init:
 	; init display
@@ -23,7 +31,7 @@ main:
 	ldi zl, low(2*row1)
 	
 	call show_msg
-		
+			
 	jmp main
 
 .equ msg_length = 6
@@ -64,13 +72,7 @@ loop_row:
 	brne loop_show_next_row
 ret
 
-.macro shift_reg
-	sbrc r16, @0 ; bit # of 16 to shift into register
-	sbi portb, 3
-	cbi portb, 5
-	sbi portb, 5
-	cbi portb, 3
-.endmacro
+
 
 select_row:
 	push r16
@@ -109,5 +111,14 @@ show_row_segment5:
 	shift_reg 3
 	shift_reg 4 ; pixel 4	
 ret
+
+
+;Definition of memory address of start and end of charbuffer
+CHARBUFFER_START: .dw	0x0100
+CHARBUFFER_END:  .dw	0x010F
+
+CharTable:
+.db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+.db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
 
 

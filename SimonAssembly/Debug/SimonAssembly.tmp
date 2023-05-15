@@ -1,0 +1,47 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc</FILE>
+  <FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\Debug\SimonAssembly.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>SimonAssembly.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>SimonAssembly.map</FILE>
+  <FILE>SimonAssembly.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <init><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>22</LINE></init>
+  <main><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>28</LINE></main>
+  <row1><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>38</LINE></row1>
+  <show_msg><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>46</LINE></show_msg>
+  <row2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>39</LINE></row2>
+  <row3><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>40</LINE></row3>
+  <row4><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>41</LINE></row4>
+  <row5><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>42</LINE></row5>
+  <row6><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>43</LINE></row6>
+  <row7><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>44</LINE></row7>
+  <loop_show_next_row><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>49</LINE></loop_show_next_row>
+  <loop_padding><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>55</LINE></loop_padding>
+  <show_row_segment5><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>105</LINE></show_row_segment5>
+  <loop_row><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>61</LINE></loop_row>
+  <select_row><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>77</LINE></select_row>
+  <delayloop1><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>93</LINE></delayloop1>
+  <enddelayloop1><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>98</LINE></enddelayloop1>
+  <CHARBUFFER_START><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>117</LINE></CHARBUFFER_START>
+  <CHARBUFFER_END><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>118</LINE></CHARBUFFER_END>
+  <CharTable><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>120</LINE></CharTable>
+ </LABELS>
+</ASSEMBLER_INFO>
