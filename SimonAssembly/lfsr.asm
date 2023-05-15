@@ -5,7 +5,7 @@
 ; Author : ArnoD
 ;
 
-.include "m328pdef.inc"		;Load addressess of IO registers
+.include "m328pdef.inc"		; load addresses of IO registers
 
 ; boot
 .org 0x000
@@ -18,38 +18,32 @@ init:
 	sbi ddrb, 5
 
 main:
-	; set Z register to memory address of beginning of message 
-	ldi zh, high(2*row1)
-	ldi zl, low(2*row1)
+	ser r19
 	
-	call show_msg
-	
-	ldi r20, 0b11100101
-	
-	call lfsr_r20
-	
+	ldi r20, 0b11010011
+ldi r17, 3
 loop:
+push r17
+	call lfsr_r20
+	cbr r19, 0
+	sbrc r20, 7
+	sbr r19, 0
+	lsl r19
+	
+	pop r17
+	dec r17
+brne loop
+
+	loop_sh:
 	call show_r20
-	rjmp loop
+	rjmp loop_sh
+; loop:
+; 	call show_r19
+; 	rjmp loop
 	
 	
 	
-	jmp main
-
-.equ msg_length = 6
-row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
-
-charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100,
-
-
-
+jmp main
 
 lfsr_r20:	; uses r20 (input/output), r21, r22
 	; 8 bit lfsr, 4 taps (8,6,5,4)
@@ -61,11 +55,6 @@ lfsr_r20:	; uses r20 (input/output), r21, r22
 	ser r21 ; set r21 (0b11111111)
 	; now r21 contains bit 0 of r20 repeated
 	
-	clc
-	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-	sec
-	; now carry is bit 0 of r20
-	
 	eor r21, r20 ; xor
 	andi r21, mask
 	; now r21 contains the xorred bits at the right positions
@@ -75,17 +64,21 @@ lfsr_r20:	; uses r20 (input/output), r21, r22
 	and r20, r22 ; set all masked bits in r20 to 0
 	
 	or r20, r21 ; move masked bits from r21 to r20
-	ror	r20 ; shift right (through carry, that's why we needed to set carry)
+	lsr	r20 ; shift right
+	
+	cbr r20, 7
+	sbrc r20, 0
+	sbr r20, 7
 ret
 
-show_r20:
+show_r19:
 	ldi r18, 7 ; # rows 
 	ldi r16, 0b0000001 ; initial row selection (row 1)
 loop_show_next_row_:
 	push r16 ; save row selection
 	
 	; padding
-	ldi r16, 0b00000
+	clr r16
 	ldi r17, 9 ; # segments to pad
 loop_padding_:
 	call show_row_segment8
@@ -94,7 +87,7 @@ loop_padding_:
 	
 	ldi r17, 1
 loop_row_:
-	mov	r16, r20 ; copy r20 into r16
+	mov	r16, r19 ; copy r19 into r16
 	call show_row_segment8
 	dec r17
 	brne loop_row_
@@ -107,27 +100,27 @@ loop_row_:
 	brne loop_show_next_row_
 ret
 
-show_msg:
+show_r20:
 	ldi r18, 7 ; # rows 
 	ldi r16, 0b0000001 ; initial row selection (row 1)
 loop_show_next_row:
 	push r16 ; save row selection
 	
 	; padding
-	ldi r16, 0b00000
-	ldi r17, 16-msg_length ; # segments to pad
+	clr r16
+	ldi r17, 9 ; # segments to pad
 loop_padding:
-	call show_row_segment5
+	call show_row_segment8
 	dec r17
 	brne loop_padding
 	
-	ldi r17, msg_length
+	ldi r17, 1
 loop_row:
-	lpm	r16, Z+ ; load segment from program memory
+	mov	r16, r20 ; copy r19 into r16
 	call show_row_segment8
 	dec r17
 	brne loop_row
-	
+
 	pop r16
 	call select_row
 	lsl r16 ; select next row
@@ -171,17 +164,6 @@ enddelayloop1:
 	pop r16
 ret
 	
-; show a row segment (5 pixels wide)
-show_row_segment5:
-	cbi portb, 3
-	
-	shift_reg 0 ; pixel 0
-	shift_reg 1
-	shift_reg 2
-	shift_reg 3
-	shift_reg 4 ; pixel 4	
-ret
-
 ; show a row segment (8 pixels wide)
 show_row_segment8:
 	cbi portb, 3
