@@ -18,7 +18,7 @@ init:
 	sbi ddrb, 5
 
 main:
-	ser r19
+	ser r19		; set all bits in this register
 	
 	ldi r20, 0b11010011
 ldi r17, 3
@@ -60,14 +60,20 @@ lfsr_r20:	; uses r20 (input/output), r21, r22
 	; now r21 contains the xorred bits at the right positions
 	
 	ldi r22, mask
-	com r22
+	com r22 ; one's complement
 	and r20, r22 ; set all masked bits in r20 to 0
 	
 	or r20, r21 ; move masked bits from r21 to r20
+
+	clr r21 ; clear r21
+	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
+	ser r21 ; set r21 (0b11111111)
+	; now r21 contains bit 0 of r20 repeated
+
 	lsr	r20 ; shift right
 	
 	cbr r20, 7
-	sbrc r20, 0
+	sbrc r21, 0
 	sbr r20, 7
 ret
 
