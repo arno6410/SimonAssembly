@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Mon May 15 16:15:30 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Mon May 15 16:53:03 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -694,33 +694,37 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000001
-CSEG main         00000004
-CSEG row1         00000010
-CSEG show_msg     00000051
-CSEG lfsr_r20     0000002d
-CSEG loop         0000000b
-CSEG show_r20     0000003b
+CSEG main         0000000e
+CSEG row1         0000004d
+CSEG K7Pressed    00000041
+CSEG k4Pressed    00000044
+CSEG kOtherPressed 00000048
+CSEG k8Pressed    00000046
+CSEG nokeyspressed 00000049
 EQU  msg_length   00000006
-CSEG row2         00000013
-CSEG row3         00000016
-CSEG row4         00000019
-CSEG row5         0000001c
-CSEG row6         0000001f
-CSEG row7         00000022
-CSEG charR        00000025
-CSEG charO        00000029
+CSEG row2         00000050
+CSEG row3         00000053
+CSEG row4         00000056
+CSEG row5         00000059
+CSEG row6         0000005c
+CSEG row7         0000005f
+CSEG charR        00000062
+CSEG charO        00000066
+CSEG lfsr_r20     0000006a
 EQU  mask         00000070
-CSEG loop_show_next_row_ 0000003d
-CSEG loop_padding_ 00000040
-CSEG show_row_segment8 000000b5
-CSEG loop_row_    00000045
-CSEG select_row   00000067
-CSEG loop_show_next_row 00000053
-CSEG loop_padding 00000056
-CSEG show_row_segment5 0000009a
-CSEG loop_row     0000005b
-CSEG delayloop1   00000093
-CSEG enddelayloop1 00000097
-CSEG CHARBUFFER_START 000000df
-CSEG CHARBUFFER_END 000000e0
-CSEG CharTable    000000e1
+CSEG show_r20     00000078
+CSEG loop_show_next_row_ 0000007a
+CSEG loop_padding_ 0000007d
+CSEG show_row_segment8 000000f2
+CSEG loop_row_    00000082
+CSEG select_row   000000a4
+CSEG show_msg     0000008e
+CSEG loop_show_next_row 00000090
+CSEG loop_padding 00000093
+CSEG show_row_segment5 000000d7
+CSEG loop_row     00000098
+CSEG delayloop1   000000d0
+CSEG enddelayloop1 000000d4
+CSEG CHARBUFFER_START 0000011c
+CSEG CHARBUFFER_END 0000011d
+CSEG CharTable    0000011e

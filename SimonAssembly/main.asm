@@ -25,12 +25,30 @@ init:
 	sbi ddrb, 4
 	sbi ddrb, 5
 
+	;Configure output pin PC2 (LED1)
+	sbi ddrc,2					;Pin PC2 is an ouput, set to 1
+	sbi portc,2					;Output Vcc => LED2 is turned off!
+
+	;Configure output pin PC3 (LED2)
+	sbi ddrc,3					;Pin PC3 is an ouput, set to 1
+	sbi portc,3					;Output Vcc => LED1 is turned off!
+
+	;Configure input pin PB0 (switch)
+	cbi ddrb,0					;Pin PB0 is an input, CBI (clear bit i/o) sets DDRB bit 2 to 0	
+	sbi portb,0					;Enables the pull-up resistor (to avoid floating)
+
+	;Configure input pins PD (keyboard)
+	ldi r16, 0b00001111			;Do it this way, the excel says that you should use in/out, use ldi first to put the address in a register
+	out ddrd, r16				;Pins PD 3-0 are input set to 0, 7-4 are output set to 1
+	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
+	out portd, r16				;The columns will be the output pins
+
 main:
 	; set Z register to memory address of beginning of message 
 	ldi zh, high(2*row1)
 	ldi zl, low(2*row1)
 	
-	call show_msg
+	/*call show_msg
 	
 	ldi r20, 0b11100101
 	
@@ -38,11 +56,93 @@ main:
 	
 loop:
 	call show_r20
-	rjmp loop
+	rjmp loop*/
 	
 	
 	
-	jmp main
+	/*jmp main*/
+
+	ldi r20, 0b11110111			;low,high,high,high to see the first row
+	ldi r21, 0b11111011			;high,low,high,high to see the second row
+	ldi r22, 0b11111101			;high,high,low,high to see the third row
+	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
+	
+	out portd, r20
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp K7Pressed
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp k4Pressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp kOtherPressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp kOtherPressed
+
+	out portd, r21
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp k8Pressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp KOtherPressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp kOtherPressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp kOtherPressed	
+	
+	out portd, r22
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp KOtherPressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp KOtherPressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp kOtherPressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp kOtherPressed		
+	
+	out portd, r23
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp KOtherPressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp KOtherPressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp kOtherPressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp kOtherPressed			
+
+	rjmp nokeyspressed
+
+K7Pressed:
+	cbi portc,2
+	cbi portc,3
+	rjmp main
+
+K4Pressed:
+	cbi portc,2
+	rjmp main
+
+K8Pressed:
+	cbi portc,3
+	rjmp main
+
+KOtherPressed:
+	/*sei							;Enable the buzzer*/
+	rjmp main
+
+nokeyspressed:
+	sbi portc,2
+	sbi portc,3
+	cli
+	rjmp main
 
 .equ msg_length = 6
 row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Mon May 15 16:15:30 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Mon May 15 16:53:03 2023
 
 [builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc'
 C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc'
@@ -1054,58 +1054,158 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
 000002 9a24                      	sbi ddrb, 4
 000003 9a25                      	sbi ddrb, 5
                                  
+                                 	;Configure output pin PC2 (LED1)
+000004 9a3a                      	sbi ddrc,2					;Pin PC2 is an ouput, set to 1
+000005 9a42                      	sbi portc,2					;Output Vcc => LED2 is turned off!
+                                 
+                                 	;Configure output pin PC3 (LED2)
+000006 9a3b                      	sbi ddrc,3					;Pin PC3 is an ouput, set to 1
+000007 9a43                      	sbi portc,3					;Output Vcc => LED1 is turned off!
+                                 
+                                 	;Configure input pin PB0 (switch)
+000008 9820                      	cbi ddrb,0					;Pin PB0 is an input, CBI (clear bit i/o) sets DDRB bit 2 to 0	
+000009 9a28                      	sbi portb,0					;Enables the pull-up resistor (to avoid floating)
+                                 
+                                 	;Configure input pins PD (keyboard)
+00000a e00f                      	ldi r16, 0b00001111			;Do it this way, the excel says that you should use in/out, use ldi first to put the address in a register
+00000b b90a                      	out ddrd, r16				;Pins PD 3-0 are input set to 0, 7-4 are output set to 1
+00000c ef00                      	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
+00000d b90b                      	out portd, r16				;The columns will be the output pins
+                                 
                                  main:
                                  	; set Z register to memory address of beginning of message 
-000004 e0f0                      	ldi zh, high(2*row1)
-000005 e2e0                      	ldi zl, low(2*row1)
+00000e e0f0                      	ldi zh, high(2*row1)
+00000f e9ea                      	ldi zl, low(2*row1)
                                  	
-000006 940e 0051                 	call show_msg
+                                 	/*call show_msg
                                  	
-000008 ee45                      	ldi r20, 0b11100101
+                                 	ldi r20, 0b11100101
                                  	
-000009 940e 002d                 	call lfsr_r20
+                                 	call lfsr_r20
                                  	
                                  loop:
-00000b 940e 003b                 	call show_r20
-00000d cffd                      	rjmp loop
+                                 	call show_r20
+                                 	rjmp loop*/
                                  	
                                  	
                                  	
-00000e 940c 0004                 	jmp main
+                                 	/*jmp main*/
+                                 
+000010 ef47                      	ldi r20, 0b11110111			;low,high,high,high to see the first row
+000011 ef5b                      	ldi r21, 0b11111011			;high,low,high,high to see the second row
+000012 ef6d                      	ldi r22, 0b11111101			;high,high,low,high to see the third row
+000013 ef7e                      	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
+                                 	
+000014 b94b                      	out portd, r20
+000015 0000                      	nop
+000016 0000                      	nop
+                                 
+000017 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000018 c028                      	rjmp K7Pressed
+000019 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+00001a c029                      	rjmp k4Pressed
+00001b 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00001c c02b                      	rjmp kOtherPressed
+00001d 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00001e c029                      	rjmp kOtherPressed
+                                 
+00001f b95b                      	out portd, r21
+000020 0000                      	nop
+000021 0000                      	nop
+                                 
+000022 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000023 c022                      	rjmp k8Pressed		
+000024 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000025 c022                      	rjmp KOtherPressed
+000026 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000027 c020                      	rjmp kOtherPressed
+000028 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000029 c01e                      	rjmp kOtherPressed	
+                                 	
+00002a b96b                      	out portd, r22
+00002b 0000                      	nop
+00002c 0000                      	nop
+                                 
+00002d 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+00002e c019                      	rjmp KOtherPressed		
+00002f 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000030 c017                      	rjmp KOtherPressed
+000031 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000032 c015                      	rjmp kOtherPressed
+000033 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000034 c013                      	rjmp kOtherPressed		
+                                 	
+000035 b97b                      	out portd, r23
+000036 0000                      	nop
+000037 0000                      	nop
+                                 
+000038 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000039 c00e                      	rjmp KOtherPressed		
+00003a 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+00003b c00c                      	rjmp KOtherPressed
+00003c 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00003d c00a                      	rjmp kOtherPressed
+00003e 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00003f c008                      	rjmp kOtherPressed			
+                                 
+000040 c008                      	rjmp nokeyspressed
+                                 
+                                 K7Pressed:
+000041 9842                      	cbi portc,2
+000042 9843                      	cbi portc,3
+000043 cfca                      	rjmp main
+                                 
+                                 K4Pressed:
+000044 9842                      	cbi portc,2
+000045 cfc8                      	rjmp main
+                                 
+                                 K8Pressed:
+000046 9843                      	cbi portc,3
+000047 cfc6                      	rjmp main
+                                 
+                                 KOtherPressed:
+                                 	/*sei							;Enable the buzzer*/
+000048 cfc5                      	rjmp main
+                                 
+                                 nokeyspressed:
+000049 9a42                      	sbi portc,2
+00004a 9a43                      	sbi portc,3
+00004b 94f8                      	cli
+00004c cfc1                      	rjmp main
                                  
                                  .equ msg_length = 6
-000010 0000
-000011 0000
-000012 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-000013 1e1c
-000014 0c0e
-000015 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-000016 1012
-000017 1204
-000018 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-000019 1c12
-00001a 1004
-00001b 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-00001c 101c
-00001d 1604
-00001e 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-00001f 1012
-000020 1204
-000021 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-000022 1e12
-000023 0c0e
-000024 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
+00004d 0000
+00004e 0000
+00004f 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
+000050 1e1c
+000051 0c0e
+000052 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
+000053 1012
+000054 1204
+000055 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+000056 1c12
+000057 1004
+000058 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
+000059 101c
+00005a 1604
+00005b 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
+00005c 1012
+00005d 1204
+00005e 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+00005f 1e12
+000060 0c0e
+000061 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
                                  
-000025 1c00
-000026 1212
-000027 121c
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(56): warning: .cseg .db misalignment - padding zero byte
-000028 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-000029 0c00
-00002a 1212
-00002b 1212
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(57): warning: .cseg .db misalignment - padding zero byte
-00002c 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
+000062 1c00
+000063 1212
+000064 121c
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(156): warning: .cseg .db misalignment - padding zero byte
+000065 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
+000066 0c00
+000067 1212
+000068 1212
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(157): warning: .cseg .db misalignment - padding zero byte
+000069 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
                                  
                                  
                                  
@@ -1115,238 +1215,238 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	; r20 contains initial value
                                  	.equ mask = 0b01110000 ; positions 7,6,5
                                  	
-00002d 2755                      	clr r21 ; clear r21
-00002e fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-00002f ef5f                      	ser r21 ; set r21 (0b11111111)
+00006a 2755                      	clr r21 ; clear r21
+00006b fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
+00006c ef5f                      	ser r21 ; set r21 (0b11111111)
                                  	; now r21 contains bit 0 of r20 repeated
                                  	
-000030 9488                      	clc
-000031 fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-000032 9408                      	sec
+00006d 9488                      	clc
+00006e fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
+00006f 9408                      	sec
                                  	; now carry is bit 0 of r20
                                  	
-000033 2754                      	eor r21, r20 ; xor
-000034 7750                      	andi r21, mask
+000070 2754                      	eor r21, r20 ; xor
+000071 7750                      	andi r21, mask
                                  	; now r21 contains the xorred bits at the right positions
                                  	
-000035 e760                      	ldi r22, mask
-000036 9560                      	com r22
-000037 2346                      	and r20, r22 ; set all masked bits in r20 to 0
+000072 e760                      	ldi r22, mask
+000073 9560                      	com r22
+000074 2346                      	and r20, r22 ; set all masked bits in r20 to 0
                                  	
-000038 2b45                      	or r20, r21 ; move masked bits from r21 to r20
-000039 9547                      	ror	r20 ; shift right (through carry, that's why we needed to set carry)
-00003a 9508                      ret
+000075 2b45                      	or r20, r21 ; move masked bits from r21 to r20
+000076 9547                      	ror	r20 ; shift right (through carry, that's why we needed to set carry)
+000077 9508                      ret
                                  
                                  show_r20:
-00003b e027                      	ldi r18, 7 ; # rows 
-00003c e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
+000078 e027                      	ldi r18, 7 ; # rows 
+000079 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
                                  loop_show_next_row_:
-00003d 930f                      	push r16 ; save row selection
+00007a 930f                      	push r16 ; save row selection
                                  	
                                  	; padding
-00003e e000                      	ldi r16, 0b00000
-00003f e019                      	ldi r17, 9 ; # segments to pad
+00007b e000                      	ldi r16, 0b00000
+00007c e019                      	ldi r17, 9 ; # segments to pad
                                  loop_padding_:
-000040 940e 00b5                 	call show_row_segment8
-000042 951a                      	dec r17
-000043 f7e1                      	brne loop_padding_
+00007d 940e 00f2                 	call show_row_segment8
+00007f 951a                      	dec r17
+000080 f7e1                      	brne loop_padding_
                                  	
-000044 e011                      	ldi r17, 1
+000081 e011                      	ldi r17, 1
                                  loop_row_:
-000045 2f04                      	mov	r16, r20 ; copy r20 into r16
-000046 940e 00b5                 	call show_row_segment8
-000048 951a                      	dec r17
-000049 f7d9                      	brne loop_row_
+000082 2f04                      	mov	r16, r20 ; copy r20 into r16
+000083 940e 00f2                 	call show_row_segment8
+000085 951a                      	dec r17
+000086 f7d9                      	brne loop_row_
                                  	
-00004a 910f                      	pop r16
-00004b 940e 0067                 	call select_row
-00004d 0f00                      	lsl r16 ; select next row
+000087 910f                      	pop r16
+000088 940e 00a4                 	call select_row
+00008a 0f00                      	lsl r16 ; select next row
                                  	
-00004e 952a                      	dec r18
-00004f f769                      	brne loop_show_next_row_
-000050 9508                      ret
+00008b 952a                      	dec r18
+00008c f769                      	brne loop_show_next_row_
+00008d 9508                      ret
                                  
                                  show_msg:
-000051 e027                      	ldi r18, 7 ; # rows 
-000052 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
+00008e e027                      	ldi r18, 7 ; # rows 
+00008f e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
                                  loop_show_next_row:
-000053 930f                      	push r16 ; save row selection
+000090 930f                      	push r16 ; save row selection
                                  	
                                  	; padding
-000054 e000                      	ldi r16, 0b00000
-000055 e01a                      	ldi r17, 16-msg_length ; # segments to pad
+000091 e000                      	ldi r16, 0b00000
+000092 e01a                      	ldi r17, 16-msg_length ; # segments to pad
                                  loop_padding:
-000056 940e 009a                 	call show_row_segment5
-000058 951a                      	dec r17
-000059 f7e1                      	brne loop_padding
+000093 940e 00d7                 	call show_row_segment5
+000095 951a                      	dec r17
+000096 f7e1                      	brne loop_padding
                                  	
-00005a e016                      	ldi r17, msg_length
+000097 e016                      	ldi r17, msg_length
                                  loop_row:
-00005b 9105                      	lpm	r16, Z+ ; load segment from program memory
-00005c 940e 00b5                 	call show_row_segment8
-00005e 951a                      	dec r17
-00005f f7d9                      	brne loop_row
+000098 9105                      	lpm	r16, Z+ ; load segment from program memory
+000099 940e 00f2                 	call show_row_segment8
+00009b 951a                      	dec r17
+00009c f7d9                      	brne loop_row
                                  	
-000060 910f                      	pop r16
-000061 940e 0067                 	call select_row
-000063 0f00                      	lsl r16 ; select next row
+00009d 910f                      	pop r16
+00009e 940e 00a4                 	call select_row
+0000a0 0f00                      	lsl r16 ; select next row
                                  	
-000064 952a                      	dec r18
-000065 f769                      	brne loop_show_next_row
-000066 9508                      ret
+0000a1 952a                      	dec r18
+0000a2 f769                      	brne loop_show_next_row
+0000a3 9508                      ret
                                  
                                  
                                  
                                  select_row:
-000067 930f                      	push r16
-000068 982b                      	cbi portb, 3
+0000a4 930f                      	push r16
+0000a5 982b                      	cbi portb, 3
                                  
-000069 fd07
-00006a 9a2b
-00006b 982d
-00006c 9a2d
-00006d 982b                      	shift_reg 7
-00006e fd06
-00006f 9a2b
-000070 982d
-000071 9a2d
-000072 982b                      	shift_reg 6
-000073 fd05
-000074 9a2b
-000075 982d
-000076 9a2d
-000077 982b                      	shift_reg 5
-000078 fd04
-000079 9a2b
-00007a 982d
-00007b 9a2d
-00007c 982b                      	shift_reg 4
-00007d fd03
-00007e 9a2b
-00007f 982d
-000080 9a2d
-000081 982b                      	shift_reg 3
-000082 fd02
-000083 9a2b
-000084 982d
-000085 9a2d
-000086 982b                      	shift_reg 2
-000087 fd01
-000088 9a2b
-000089 982d
-00008a 9a2d
-00008b 982b                      	shift_reg 1
-00008c fd00
-00008d 9a2b
-00008e 982d
-00008f 9a2d
-000090 982b                      	shift_reg 0
+0000a6 fd07
+0000a7 9a2b
+0000a8 982d
+0000a9 9a2d
+0000aa 982b                      	shift_reg 7
+0000ab fd06
+0000ac 9a2b
+0000ad 982d
+0000ae 9a2d
+0000af 982b                      	shift_reg 6
+0000b0 fd05
+0000b1 9a2b
+0000b2 982d
+0000b3 9a2d
+0000b4 982b                      	shift_reg 5
+0000b5 fd04
+0000b6 9a2b
+0000b7 982d
+0000b8 9a2d
+0000b9 982b                      	shift_reg 4
+0000ba fd03
+0000bb 9a2b
+0000bc 982d
+0000bd 9a2d
+0000be 982b                      	shift_reg 3
+0000bf fd02
+0000c0 9a2b
+0000c1 982d
+0000c2 9a2d
+0000c3 982b                      	shift_reg 2
+0000c4 fd01
+0000c5 9a2b
+0000c6 982d
+0000c7 9a2d
+0000c8 982b                      	shift_reg 1
+0000c9 fd00
+0000ca 9a2b
+0000cb 982d
+0000cc 9a2d
+0000cd 982b                      	shift_reg 0
                                  	
                                  	; latch to show row on display
-000091 9a2c                      	sbi portb, 4
-000092 ef0f                      	ldi r16, 255
+0000ce 9a2c                      	sbi portb, 4
+0000cf ef0f                      	ldi r16, 255
                                  delayloop1:
-000093 5001                      	subi r16, 1
-000094 f011                      	breq enddelayloop1
-000095 0000                      	nop
-000096 cffc                      	rjmp delayloop1
+0000d0 5001                      	subi r16, 1
+0000d1 f011                      	breq enddelayloop1
+0000d2 0000                      	nop
+0000d3 cffc                      	rjmp delayloop1
                                  enddelayloop1:
-000097 982c                      	cbi portb, 4
+0000d4 982c                      	cbi portb, 4
                                  	
-000098 910f                      	pop r16
-000099 9508                      ret
+0000d5 910f                      	pop r16
+0000d6 9508                      ret
                                  	
                                  ; show a row segment (5 pixels wide)
                                  show_row_segment5:
-00009a 982b                      	cbi portb, 3
+0000d7 982b                      	cbi portb, 3
                                  	
-00009b fd00
-00009c 9a2b
-00009d 982d
-00009e 9a2d
-00009f 982b                      	shift_reg 0 ; pixel 0
-0000a0 fd01
-0000a1 9a2b
-0000a2 982d
-0000a3 9a2d
-0000a4 982b                      	shift_reg 1
-0000a5 fd02
-0000a6 9a2b
-0000a7 982d
-0000a8 9a2d
-0000a9 982b                      	shift_reg 2
-0000aa fd03
-0000ab 9a2b
-0000ac 982d
-0000ad 9a2d
-0000ae 982b                      	shift_reg 3
-0000af fd04
-0000b0 9a2b
-0000b1 982d
-0000b2 9a2d
-0000b3 982b                      	shift_reg 4 ; pixel 4	
-0000b4 9508                      ret
+0000d8 fd00
+0000d9 9a2b
+0000da 982d
+0000db 9a2d
+0000dc 982b                      	shift_reg 0 ; pixel 0
+0000dd fd01
+0000de 9a2b
+0000df 982d
+0000e0 9a2d
+0000e1 982b                      	shift_reg 1
+0000e2 fd02
+0000e3 9a2b
+0000e4 982d
+0000e5 9a2d
+0000e6 982b                      	shift_reg 2
+0000e7 fd03
+0000e8 9a2b
+0000e9 982d
+0000ea 9a2d
+0000eb 982b                      	shift_reg 3
+0000ec fd04
+0000ed 9a2b
+0000ee 982d
+0000ef 9a2d
+0000f0 982b                      	shift_reg 4 ; pixel 4	
+0000f1 9508                      ret
                                  
                                  ; show a row segment (8 pixels wide)
                                  show_row_segment8:
-0000b5 982b                      	cbi portb, 3
+0000f2 982b                      	cbi portb, 3
                                  	
-0000b6 fd00
-0000b7 9a2b
-0000b8 982d
-0000b9 9a2d
-0000ba 982b                      	shift_reg 0 ; pixel 0
-0000bb fd01
-0000bc 9a2b
-0000bd 982d
-0000be 9a2d
-0000bf 982b                      	shift_reg 1
-0000c0 fd02
-0000c1 9a2b
-0000c2 982d
-0000c3 9a2d
-0000c4 982b                      	shift_reg 2
-0000c5 fd03
-0000c6 9a2b
-0000c7 982d
-0000c8 9a2d
-0000c9 982b                      	shift_reg 3
-0000ca fd04
-0000cb 9a2b
-0000cc 982d
-0000cd 9a2d
-0000ce 982b                      	shift_reg 4
-0000cf fd05
-0000d0 9a2b
-0000d1 982d
-0000d2 9a2d
-0000d3 982b                      	shift_reg 5
-0000d4 fd06
-0000d5 9a2b
-0000d6 982d
-0000d7 9a2d
-0000d8 982b                      	shift_reg 6
-0000d9 fd07
-0000da 9a2b
-0000db 982d
-0000dc 9a2d
-0000dd 982b                      	shift_reg 7	
-0000de 9508                      ret
+0000f3 fd00
+0000f4 9a2b
+0000f5 982d
+0000f6 9a2d
+0000f7 982b                      	shift_reg 0 ; pixel 0
+0000f8 fd01
+0000f9 9a2b
+0000fa 982d
+0000fb 9a2d
+0000fc 982b                      	shift_reg 1
+0000fd fd02
+0000fe 9a2b
+0000ff 982d
+000100 9a2d
+000101 982b                      	shift_reg 2
+000102 fd03
+000103 9a2b
+000104 982d
+000105 9a2d
+000106 982b                      	shift_reg 3
+000107 fd04
+000108 9a2b
+000109 982d
+00010a 9a2d
+00010b 982b                      	shift_reg 4
+00010c fd05
+00010d 9a2b
+00010e 982d
+00010f 9a2d
+000110 982b                      	shift_reg 5
+000111 fd06
+000112 9a2b
+000113 982d
+000114 9a2d
+000115 982b                      	shift_reg 6
+000116 fd07
+000117 9a2b
+000118 982d
+000119 9a2d
+00011a 982b                      	shift_reg 7	
+00011b 9508                      ret
                                  
                                  
                                  ;Definition of memory address of start and end of charbuffer
-0000df 0100                      CHARBUFFER_START: .dw	0x0100
-0000e0 010f                      CHARBUFFER_END:  .dw	0x010F
+00011c 0100                      CHARBUFFER_START: .dw	0x0100
+00011d 010f                      CHARBUFFER_END:  .dw	0x010F
                                  
                                  CharTable:
-0000e1 0c00
-0000e2 1212
-0000e3 1212
-0000e4 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
-0000e5 0400
-0000e6 140c
-0000e7 0404
-0000e8 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+00011e 0c00
+00011f 1212
+000120 1212
+000121 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+000122 0400
+000123 140c
+000124 0404
+000125 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
                                  
                                  
 
@@ -1368,10 +1468,10 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  37 r17:   8 r18:   4 r19:   0 r20:   8 
-r21:   5 r22:   3 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
+r13:   0 r14:   0 r15:   0 r16:  41 r17:   8 r18:   4 r19:   0 r20:   9 
+r21:   7 r22:   5 r23:   2 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   1 r31:   1 
-Registers used: 9 out of 35 (25.7%)
+Registers used: 10 out of 35 (28.6%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   1 
@@ -1379,26 +1479,26 @@ andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   1 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   9 cbi   :  46 cbr   :   0 
-clc   :   1 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   6 cbi   :  51 cbr   :   0 
+clc   :   1 clh   :   0 cli   :   1 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   1 cp    :   0 cpc   :   0 
 cpi   :   0 cpse  :   0 dec   :   6 eor   :   1 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   1 
-ld    :   0 ldd   :   0 ldi   :  15 lds   :   0 lpm   :   1 lsl   :   2 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0 
+ld    :   0 ldd   :   0 ldi   :  20 lds   :   0 lpm   :   1 lsl   :   2 
 lsr   :   0 mov   :   1 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   1 or    :   1 ori   :   0 out   :   0 pop   :   3 
-push  :   3 rcall :   0 ret   :   6 reti  :   0 rjmp  :   3 rol   :   0 
-ror   :   1 sbc   :   0 sbci  :   0 sbi   :  46 sbic  :   0 sbis  :   0 
+neg   :   0 nop   :   9 or    :   1 ori   :   0 out   :   6 pop   :   3 
+push  :   3 rcall :   0 ret   :   6 reti  :   0 rjmp  :  24 rol   :   0 
+ror   :   1 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  16 
 sbiw  :   0 sbr   :   0 sbrc  :  23 sbrs  :   0 sec   :   1 seh   :   0 
 sei   :   0 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   0 
 sub   :   0 subi  :   1 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 28 out of 113 (24.8%)
+Instructions used: 30 out of 113 (26.5%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0001d2    388     78    466   32768   1.4%
+[.cseg] 0x000000 0x00024c    510     78    588   32768   1.8%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
