@@ -46,17 +46,22 @@ init:
 	;Put correct combination into memory
 	ldi zh, high(COMB_ADDRESS)
 	ldi zl, low(COMB_ADDRESS)
-	ldi r28, 0x0F
+	ldi r28, 0x01
 	st Z+, r28 ;Post increment!
-	ldi r28, 0x05
-	st Z, r28
+	ldi r28, 0x02
+	st Z+, r28
+/*	ldi r28, 0x03
+	st Z+, r28*/
+/*	ldi r28, 0x04
+	st Z+, r28*/
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
 	ldi yl, low(COMB_ADDRESS)
 	ld	r24,Y+
 	;Put combination size in r25
-	/*ldi r25,0x02*/
+	ldi r25,0x02
+	mov r26,r25 ;r26 will be used to keep track of the combination
 
 main:
 	
@@ -140,51 +145,43 @@ K7Pressed:
 	cpi	r24,0x07 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K4Pressed:
 	cpi	r24,0x04 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K1Pressed:
 	cpi	r24,0x01 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 KAPressed:
 	cpi	r24,0x0A ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K8Pressed:
 	cpi	r24,0x08 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K5Pressed:
 	cpi	r24,0x05 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K2Pressed:
 	cpi	r24,0x02 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
 K0Pressed:
 	cpi	r24,0x00 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
-	rjmp main
 
-;To avoid Relative Branch Out of Reach error=================
+;==========To avoid Relative Branch Out of Reach error==========
 Jump2C:
 	jmp Correct
 ;========================
@@ -193,54 +190,45 @@ K9Pressed:
 	cpi	r24,0x09 ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 K6Pressed:
 	cpi	r24,0x06 ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 K3Pressed:
 	cpi	r24,0x03 ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KBPressed:
 	cpi	r24,0x0B ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KFPressed:
 	cpi	r24,0x0F ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KEPressed:
 	cpi	r24,0x0E ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KDPressed:
 	cpi	r24,0x0D ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KCPressed:
 	cpi	r24,0x0C ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
-	rjmp main
 
 KOtherPressed:
 	/*sei							;Enable the buzzer*/
 	rjmp NotCorrect
-	rjmp main
 
 nokeyspressed:
 /*	sbi portc,2
@@ -252,19 +240,32 @@ Correct:
 	; Jump here when correct button is pressed
 
 	; Load next correct combination from memory
-/*	ldi yh, high(COMB_ADDRESS)
-	ldi yl, low(COMB_ADDRESS)*/
-	ld	r24,Y
-	dec r25
-	sbrs r25, 0 ; skip next line if bit 0 of r20 is 0
-	cbi portc,3
+	ld r24,Y+
+	dec r26	
+	breq Win ;Reset if combination finished
 
 	cbi portc,2
 	rjmp main
 
 NotCorrect:
+	;Jump here when button is wrong
+
 	sbi portc,2
+	/*sbi portc,3	*/
+	rjmp Reset
+
+Win:
+	cbi portc,3
+
+Reset:
+	;When wrong combination 
+	ldi yh, high(COMB_ADDRESS)
+	ldi yl, low(COMB_ADDRESS)
+	ld	r24,Y+
+	mov r26,r25
+
 	rjmp main
+
 
 .equ msg_length = 6
 row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
