@@ -43,10 +43,23 @@ init:
 	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
 	out portd, r16				;The columns will be the output pins
 
+	;Put correct combination into memory
+	ldi zh, high(COMB_ADDRESS)
+	ldi zl, low(COMB_ADDRESS)
+	ldi r28, 0x0F
+	st Z+, r28 ;Post increment!
+	ldi r28, 0x05
+	st Z, r28
+	;...
+	;First correct one put into r24
+	ldi yh, high(COMB_ADDRESS)
+	ldi yl, low(COMB_ADDRESS)
+	ld	r24,Y+
+	;Put combination size in r25
+	/*ldi r25,0x02*/
+
 main:
-	; set Z register to memory address of beginning of message 
-	ldi zh, high(2*row1)
-	ldi zl, low(2*row1)
+	
 	
 	/*call show_msg
 	
@@ -74,74 +87,183 @@ loop:
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
 	rjmp K7Pressed
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp k4Pressed
+	rjmp K4Pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp kOtherPressed
+	rjmp K1Pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp kOtherPressed
+	rjmp KAPressed
 
 	out portd, r21
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp k8Pressed		
+	rjmp K8Pressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp KOtherPressed
+	rjmp K5Pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp kOtherPressed
+	rjmp K2Pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp kOtherPressed	
+	rjmp K0Pressed	
 	
 	out portd, r22
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp KOtherPressed		
+	rjmp K9Pressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp KOtherPressed
+	rjmp K6Pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp kOtherPressed
+	rjmp K3Pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp kOtherPressed		
+	rjmp KBPressed		
 	
 	out portd, r23
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp KOtherPressed		
+	rjmp KFPressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp KOtherPressed
+	rjmp KEPressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp kOtherPressed
+	rjmp KDPressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp kOtherPressed			
+	rjmp KCPressed			
 
 	rjmp nokeyspressed
 
 K7Pressed:
-	cbi portc,2
-	cbi portc,3
+/*	cbi portc,2
+	cbi portc,3*/
+	cpi	r24,0x07 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
 	rjmp main
 
 K4Pressed:
-	cbi portc,2
+	cpi	r24,0x04 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+K1Pressed:
+	cpi	r24,0x01 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+KAPressed:
+	cpi	r24,0x0A ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
 	rjmp main
 
 K8Pressed:
-	cbi portc,3
+	cpi	r24,0x08 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+K5Pressed:
+	cpi	r24,0x05 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+K2Pressed:
+	cpi	r24,0x02 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+K0Pressed:
+	cpi	r24,0x00 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+	rjmp main
+
+;To avoid Relative Branch Out of Reach error=================
+Jump2C:
+	jmp Correct
+;========================
+
+K9Pressed:
+	cpi	r24,0x09 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+K6Pressed:
+	cpi	r24,0x06 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+K3Pressed:
+	cpi	r24,0x03 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+KBPressed:
+	cpi	r24,0x0B ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+KFPressed:
+	cpi	r24,0x0F ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+KEPressed:
+	cpi	r24,0x0E ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+KDPressed:
+	cpi	r24,0x0D ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+	rjmp main
+
+KCPressed:
+	cpi	r24,0x0C ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
 	rjmp main
 
 KOtherPressed:
 	/*sei							;Enable the buzzer*/
+	rjmp NotCorrect
 	rjmp main
 
 nokeyspressed:
-	sbi portc,2
-	sbi portc,3
+/*	sbi portc,2
+	sbi portc,3*/
 	cli
+	rjmp main
+
+Correct:
+	; Jump here when correct button is pressed
+
+	; Load next correct combination from memory
+/*	ldi yh, high(COMB_ADDRESS)
+	ldi yl, low(COMB_ADDRESS)*/
+	ld	r24,Y
+	dec r25
+	sbrs r25, 0 ; skip next line if bit 0 of r20 is 0
+	cbi portc,3
+
+	cbi portc,2
+	rjmp main
+
+NotCorrect:
+	sbi portc,2
 	rjmp main
 
 .equ msg_length = 6
@@ -306,5 +428,7 @@ CHARBUFFER_END:  .dw	0x010F
 CharTable:
 .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
 .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+
+COMB_ADDRESS: .dw 0x0500 ;?
 
 
