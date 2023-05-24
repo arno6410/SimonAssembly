@@ -10,6 +10,8 @@
 ; boot
 .org 0x000
 rjmp init
+.org 0x0020
+rjmp Timer1OverflowInterrupt
 
 .macro shift_reg
 	sbrc r16, @0 ; bit # of 16 to shift into register
@@ -43,6 +45,31 @@ init:
 	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
 	out portd, r16				;The columns will be the output pins
 
+	;==========TIMER 1: 16 bit==========
+	;For 2Hz (0.5s), should be 4Hz
+/*	ldi r16, 0b00 ;Workaround with ldi and general purpose register because out cant be used with a constant
+	sts tccr1a, r16
+	ldi r16, 0b00000100
+	sts tccr1b, r16 ;tccr1 is the timer control register, not bit addressable, 100 is to set prescaler to 64*/
+
+	ldi r20, 0b00000000 ; CTC mode, int clk;
+	sts tccr1a, r20     
+	ldi r20, 0b000000100 ; prescaler /64
+	sts tccr1b, r20
+
+	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
+	sts TCNT1L,r16
+	ldi r16,0X00 ;1011 1101 1100 is 3036 in decimal
+	sts TCNT1H,r16
+
+	
+
+
+	ldi r16, 0b00000001
+	sts timsk1, r16 ;Set toie0 bit to 1, to enable timer/counter0 overflow
+	sei ;Turn on timer (always on?)
+	;====================
+
 	;Put correct combination into memory
 	ldi zh, high(COMB_ADDRESS)
 	ldi zl, low(COMB_ADDRESS)
@@ -50,21 +77,22 @@ init:
 	st Z+, r28 ;Post increment!
 	ldi r28, 0x02
 	st Z+, r28
-/*	ldi r28, 0x03
-	st Z+, r28*/
-/*	ldi r28, 0x04
-	st Z+, r28*/
+	ldi r28, 0x03
+	st Z+, r28
+	ldi r28, 0x04
+	st Z+, r28
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
 	ldi yl, low(COMB_ADDRESS)
 	ld	r24,Y+
 	;Put combination size in r25
-	ldi r25,0x02
+	ldi r25,0x04
 	mov r26,r25 ;r26 will be used to keep track of the combination
 
 main:
 	
+	/*cli*/
 	
 	/*call show_msg
 	
@@ -147,11 +175,17 @@ K7Pressed:
 	rjmp NotCorrect
 
 K4Pressed:
+	rjmp DELAY
+	sbis pind,6
+	rjmp K4Pressed
 	cpi	r24,0x04 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
 
 K1Pressed:
+	rjmp DELAY
+	sbis pind,5
+	rjmp K1Pressed
 	cpi	r24,0x01 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
@@ -172,6 +206,9 @@ K5Pressed:
 	rjmp NotCorrect
 
 K2Pressed:
+	rjmp DELAY
+	sbis pind,5
+	rjmp K2Pressed
 	cpi	r24,0x02 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
@@ -185,6 +222,23 @@ K0Pressed:
 Jump2C:
 	jmp Correct
 ;========================
+DELAY:
+	push r16
+	push r17
+	LDI R16,0xFF
+	Delayloop1_:
+		NOP
+		LDI R17,4
+		DelayLoop2:
+			NOP
+			DEC R17
+			BRNE DelayLoop2
+		DEC R16
+		BRNE DelayLoop1_
+	pop r17
+	pop r16
+RET
+;========================
 
 K9Pressed:
 	cpi	r24,0x09 ;Compare with immediate
@@ -197,6 +251,9 @@ K6Pressed:
 	rjmp NotCorrect
 
 K3Pressed:
+	rjmp DELAY
+	sbis pind,5
+	rjmp K3Pressed
 	cpi	r24,0x03 ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
@@ -249,7 +306,7 @@ Correct:
 
 NotCorrect:
 	;Jump here when button is wrong
-
+	;sbi portc,3
 	sbi portc,2
 	/*sbi portc,3	*/
 	rjmp Reset
@@ -420,6 +477,22 @@ show_row_segment8:
 	shift_reg 6
 	shift_reg 7	
 ret
+
+Timer1OverflowInterrupt:
+	push r16
+	push r17
+
+	ldi r17,0b11011100 ;To ensure 4Hz with prescaler 64
+	sts TCNT1L,r17
+	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
+	sts TCNT1H,r16
+
+	pop r17
+	pop r16
+
+	sbi pinc,2 ;Flips the value
+
+	reti
 
 
 ;Definition of memory address of start and end of charbuffer

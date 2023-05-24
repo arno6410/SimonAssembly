@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Thu May 18 14:41:44 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Wed May 24 19:33:45 2023
 
 [builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc'
 C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc'
@@ -1038,7 +1038,9 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  
                                  ; boot
                                  .org 0x000
-000000 c000                      rjmp init
+000000 c020                      rjmp init
+                                 .org 0x0020
+000020 c187                      rjmp Timer1OverflowInterrupt
                                  
                                  .macro shift_reg
                                  	sbrc r16, @0 ; bit # of 16 to shift into register
@@ -1050,50 +1052,76 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  
                                  init:
                                  	; init display
-000001 9a23                      	sbi ddrb, 3
-000002 9a24                      	sbi ddrb, 4
-000003 9a25                      	sbi ddrb, 5
+000021 9a23                      	sbi ddrb, 3
+000022 9a24                      	sbi ddrb, 4
+000023 9a25                      	sbi ddrb, 5
                                  
                                  	;Configure output pin PC2 (LED1)
-000004 9a3a                      	sbi ddrc,2					;Pin PC2 is an ouput, set to 1
-000005 9a42                      	sbi portc,2					;Output Vcc => LED2 is turned off!
+000024 9a3a                      	sbi ddrc,2					;Pin PC2 is an ouput, set to 1
+000025 9a42                      	sbi portc,2					;Output Vcc => LED2 is turned off!
                                  
                                  	;Configure output pin PC3 (LED2)
-000006 9a3b                      	sbi ddrc,3					;Pin PC3 is an ouput, set to 1
-000007 9a43                      	sbi portc,3					;Output Vcc => LED1 is turned off!
+000026 9a3b                      	sbi ddrc,3					;Pin PC3 is an ouput, set to 1
+000027 9a43                      	sbi portc,3					;Output Vcc => LED1 is turned off!
                                  
                                  	;Configure input pin PB0 (switch)
-000008 9820                      	cbi ddrb,0					;Pin PB0 is an input, CBI (clear bit i/o) sets DDRB bit 2 to 0	
-000009 9a28                      	sbi portb,0					;Enables the pull-up resistor (to avoid floating)
+000028 9820                      	cbi ddrb,0					;Pin PB0 is an input, CBI (clear bit i/o) sets DDRB bit 2 to 0	
+000029 9a28                      	sbi portb,0					;Enables the pull-up resistor (to avoid floating)
                                  
                                  	;Configure input pins PD (keyboard)
-00000a e00f                      	ldi r16, 0b00001111			;Do it this way, the excel says that you should use in/out, use ldi first to put the address in a register
-00000b b90a                      	out ddrd, r16				;Pins PD 3-0 are input set to 0, 7-4 are output set to 1
-00000c ef00                      	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
-00000d b90b                      	out portd, r16				;The columns will be the output pins
+00002a e00f                      	ldi r16, 0b00001111			;Do it this way, the excel says that you should use in/out, use ldi first to put the address in a register
+00002b b90a                      	out ddrd, r16				;Pins PD 3-0 are input set to 0, 7-4 are output set to 1
+00002c ef00                      	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
+00002d b90b                      	out portd, r16				;The columns will be the output pins
+                                 
+                                 	;==========TIMER 1: 16 bit==========
+                                 	;For 2Hz (0.5s), should be 4Hz
+                                 /*	ldi r16, 0b00 ;Workaround with ldi and general purpose register because out cant be used with a constant
+                                 	sts tccr1a, r16
+                                 	ldi r16, 0b00000100
+                                 	sts tccr1b, r16 ;tccr1 is the timer control register, not bit addressable, 100 is to set prescaler to 64*/
+                                 
+00002e e040                      	ldi r20, 0b00000000 ; CTC mode, int clk;
+00002f 9340 0080                 	sts tccr1a, r20     
+000031 e044                      	ldi r20, 0b000000100 ; prescaler /64
+000032 9340 0081                 	sts tccr1b, r20
+                                 
+000034 e000                      	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
+000035 9300 0084                 	sts TCNT1L,r16
+000037 e000                      	ldi r16,0X00 ;1011 1101 1100 is 3036 in decimal
+000038 9300 0085                 	sts TCNT1H,r16
+                                 
+                                 	
+                                 
+                                 
+00003a e001                      	ldi r16, 0b00000001
+00003b 9300 006f                 	sts timsk1, r16 ;Set toie0 bit to 1, to enable timer/counter0 overflow
+00003d 9478                      	sei ;Turn on timer (always on?)
+                                 	;====================
                                  
                                  	;Put correct combination into memory
-00000e e0f1                      	ldi zh, high(COMB_ADDRESS)
-00000f e6e6                      	ldi zl, low(COMB_ADDRESS)
-000010 e0c1                      	ldi r28, 0x01
-000011 93c1                      	st Z+, r28 ;Post increment!
-000012 e0c2                      	ldi r28, 0x02
-000013 93c1                      	st Z+, r28
-                                 /*	ldi r28, 0x03
-                                 	st Z+, r28*/
-                                 /*	ldi r28, 0x04
-                                 	st Z+, r28*/
+00003e e0f1                      	ldi zh, high(COMB_ADDRESS)
+00003f ebee                      	ldi zl, low(COMB_ADDRESS)
+000040 e0c1                      	ldi r28, 0x01
+000041 93c1                      	st Z+, r28 ;Post increment!
+000042 e0c2                      	ldi r28, 0x02
+000043 93c1                      	st Z+, r28
+000044 e0c3                      	ldi r28, 0x03
+000045 93c1                      	st Z+, r28
+000046 e0c4                      	ldi r28, 0x04
+000047 93c1                      	st Z+, r28
                                  	;...
                                  	;First correct one put into r24
-000014 e0d1                      	ldi yh, high(COMB_ADDRESS)
-000015 e6c6                      	ldi yl, low(COMB_ADDRESS)
-000016 9189                      	ld	r24,Y+
+000048 e0d1                      	ldi yh, high(COMB_ADDRESS)
+000049 ebce                      	ldi yl, low(COMB_ADDRESS)
+00004a 9189                      	ld	r24,Y+
                                  	;Put combination size in r25
-000017 e092                      	ldi r25,0x02
-000018 2fa9                      	mov r26,r25 ;r26 will be used to keep track of the combination
+00004b e094                      	ldi r25,0x04
+00004c 2fa9                      	mov r26,r25 ;r26 will be used to keep track of the combination
                                  
                                  main:
                                  	
+                                 	/*cli*/
                                  	
                                  	/*call show_msg
                                  	
@@ -1109,226 +1137,255 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	
                                  	/*jmp main*/
                                  
-000019 ef47                      	ldi r20, 0b11110111			;low,high,high,high to see the first row
-00001a ef5b                      	ldi r21, 0b11111011			;high,low,high,high to see the second row
-00001b ef6d                      	ldi r22, 0b11111101			;high,high,low,high to see the third row
-00001c ef7e                      	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
+00004d ef47                      	ldi r20, 0b11110111			;low,high,high,high to see the first row
+00004e ef5b                      	ldi r21, 0b11111011			;high,low,high,high to see the second row
+00004f ef6d                      	ldi r22, 0b11111101			;high,high,low,high to see the third row
+000050 ef7e                      	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
                                  	
-00001d b94b                      	out portd, r20
-00001e 0000                      	nop
-00001f 0000                      	nop
+000051 b94b                      	out portd, r20
+000052 0000                      	nop
+000053 0000                      	nop
                                  
-000020 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000021 c028                      	rjmp K7Pressed
-000022 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000023 c029                      	rjmp K4Pressed
-000024 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-000025 c02a                      	rjmp K1Pressed
-000026 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000027 c02b                      	rjmp KAPressed
+000054 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000055 c028                      	rjmp K7Pressed
+000056 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000057 c029                      	rjmp K4Pressed
+000058 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000059 c02d                      	rjmp K1Pressed
+00005a 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00005b c031                      	rjmp KAPressed
                                  
-000028 b95b                      	out portd, r21
-000029 0000                      	nop
-00002a 0000                      	nop
+00005c b95b                      	out portd, r21
+00005d 0000                      	nop
+00005e 0000                      	nop
                                  
-00002b 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-00002c c029                      	rjmp K8Pressed		
-00002d 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-00002e c02a                      	rjmp K5Pressed
-00002f 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-000030 c02b                      	rjmp K2Pressed
-000031 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000032 c02c                      	rjmp K0Pressed	
+00005f 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000060 c02f                      	rjmp K8Pressed		
+000061 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000062 c030                      	rjmp K5Pressed
+000063 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000064 c031                      	rjmp K2Pressed
+000065 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000066 c035                      	rjmp K0Pressed	
                                  	
-000033 b96b                      	out portd, r22
-000034 0000                      	nop
-000035 0000                      	nop
+000067 b96b                      	out portd, r22
+000068 0000                      	nop
+000069 0000                      	nop
                                  
-000036 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000037 c02c                      	rjmp K9Pressed		
-000038 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000039 c02d                      	rjmp K6Pressed
-00003a 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-00003b c02e                      	rjmp K3Pressed
-00003c 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-00003d c02f                      	rjmp KBPressed		
+00006a 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+00006b c042                      	rjmp K9Pressed		
+00006c 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+00006d c043                      	rjmp K6Pressed
+00006e 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00006f c044                      	rjmp K3Pressed
+000070 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000071 c048                      	rjmp KBPressed		
                                  	
-00003e b97b                      	out portd, r23
-00003f 0000                      	nop
-000040 0000                      	nop
+000072 b97b                      	out portd, r23
+000073 0000                      	nop
+000074 0000                      	nop
                                  
-000041 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000042 c02d                      	rjmp KFPressed		
-000043 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000044 c02e                      	rjmp KEPressed
-000045 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-000046 c02f                      	rjmp KDPressed
-000047 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000048 c030                      	rjmp KCPressed			
+000075 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000076 c046                      	rjmp KFPressed		
+000077 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000078 c047                      	rjmp KEPressed
+000079 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00007a c048                      	rjmp KDPressed
+00007b 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00007c c049                      	rjmp KCPressed			
                                  
-000049 c033                      	rjmp nokeyspressed
+00007d c04c                      	rjmp nokeyspressed
                                  
                                  K7Pressed:
                                  /*	cbi portc,2
                                  	cbi portc,3*/
-00004a 3087                      	cpi	r24,0x07 ;Compare with immediate
-00004b f0b1                      	breq Jump2C
-00004c c037                      	rjmp NotCorrect
+00007e 3087                      	cpi	r24,0x07 ;Compare with immediate
+00007f f0f9                      	breq Jump2C
+000080 c050                      	rjmp NotCorrect
                                  
                                  K4Pressed:
-00004d 3084                      	cpi	r24,0x04 ;Compare with immediate
-00004e f099                      	breq Jump2C
-00004f c034                      	rjmp NotCorrect
+000081 c01f                      	rjmp DELAY
+000082 9b4e                      	sbis pind,6
+000083 cffd                      	rjmp K4Pressed
+000084 3084                      	cpi	r24,0x04 ;Compare with immediate
+000085 f0c9                      	breq Jump2C
+000086 c04a                      	rjmp NotCorrect
                                  
                                  K1Pressed:
-000050 3081                      	cpi	r24,0x01 ;Compare with immediate
-000051 f081                      	breq Jump2C
-000052 c031                      	rjmp NotCorrect
+000087 c019                      	rjmp DELAY
+000088 9b4d                      	sbis pind,5
+000089 cffd                      	rjmp K1Pressed
+00008a 3081                      	cpi	r24,0x01 ;Compare with immediate
+00008b f099                      	breq Jump2C
+00008c c044                      	rjmp NotCorrect
                                  
                                  KAPressed:
-000053 308a                      	cpi	r24,0x0A ;Compare with immediate
-000054 f069                      	breq Jump2C
-000055 c02e                      	rjmp NotCorrect
+00008d 308a                      	cpi	r24,0x0A ;Compare with immediate
+00008e f081                      	breq Jump2C
+00008f c041                      	rjmp NotCorrect
                                  
                                  K8Pressed:
-000056 3088                      	cpi	r24,0x08 ;Compare with immediate
-000057 f051                      	breq Jump2C
-000058 c02b                      	rjmp NotCorrect
+000090 3088                      	cpi	r24,0x08 ;Compare with immediate
+000091 f069                      	breq Jump2C
+000092 c03e                      	rjmp NotCorrect
                                  
                                  K5Pressed:
-000059 3085                      	cpi	r24,0x05 ;Compare with immediate
-00005a f039                      	breq Jump2C
-00005b c028                      	rjmp NotCorrect
+000093 3085                      	cpi	r24,0x05 ;Compare with immediate
+000094 f051                      	breq Jump2C
+000095 c03b                      	rjmp NotCorrect
                                  
                                  K2Pressed:
-00005c 3082                      	cpi	r24,0x02 ;Compare with immediate
-00005d f021                      	breq Jump2C
-00005e c025                      	rjmp NotCorrect
+000096 c00a                      	rjmp DELAY
+000097 9b4d                      	sbis pind,5
+000098 cffd                      	rjmp K2Pressed
+000099 3082                      	cpi	r24,0x02 ;Compare with immediate
+00009a f021                      	breq Jump2C
+00009b c035                      	rjmp NotCorrect
                                  
                                  K0Pressed:
-00005f 3080                      	cpi	r24,0x00 ;Compare with immediate
-000060 f009                      	breq Jump2C
-000061 c022                      	rjmp NotCorrect
+00009c 3080                      	cpi	r24,0x00 ;Compare with immediate
+00009d f009                      	breq Jump2C
+00009e c032                      	rjmp NotCorrect
                                  
                                  ;==========To avoid Relative Branch Out of Reach error==========
                                  Jump2C:
-000062 940c 007f                 	jmp Correct
+00009f 940c 00cc                 	jmp Correct
+                                 ;========================
+                                 DELAY:
+0000a1 930f                      	push r16
+0000a2 931f                      	push r17
+0000a3 ef0f                      	LDI R16,0xFF
+                                 	Delayloop1_:
+0000a4 0000                      		NOP
+0000a5 e014                      		LDI R17,4
+                                 		DelayLoop2:
+0000a6 0000                      			NOP
+0000a7 951a                      			DEC R17
+0000a8 f7e9                      			BRNE DelayLoop2
+0000a9 950a                      		DEC R16
+0000aa f7c9                      		BRNE DelayLoop1_
+0000ab 911f                      	pop r17
+0000ac 910f                      	pop r16
+0000ad 9508                      RET
                                  ;========================
                                  
                                  K9Pressed:
-000064 3089                      	cpi	r24,0x09 ;Compare with immediate
-000065 f0c9                      	breq Correct
-000066 c01d                      	rjmp NotCorrect
+0000ae 3089                      	cpi	r24,0x09 ;Compare with immediate
+0000af f0e1                      	breq Correct
+0000b0 c020                      	rjmp NotCorrect
                                  
                                  K6Pressed:
-000067 3086                      	cpi	r24,0x06 ;Compare with immediate
-000068 f0b1                      	breq Correct
-000069 c01a                      	rjmp NotCorrect
+0000b1 3086                      	cpi	r24,0x06 ;Compare with immediate
+0000b2 f0c9                      	breq Correct
+0000b3 c01d                      	rjmp NotCorrect
                                  
                                  K3Pressed:
-00006a 3083                      	cpi	r24,0x03 ;Compare with immediate
-00006b f099                      	breq Correct
-00006c c017                      	rjmp NotCorrect
+0000b4 cfec                      	rjmp DELAY
+0000b5 9b4d                      	sbis pind,5
+0000b6 cffd                      	rjmp K3Pressed
+0000b7 3083                      	cpi	r24,0x03 ;Compare with immediate
+0000b8 f099                      	breq Correct
+0000b9 c017                      	rjmp NotCorrect
                                  
                                  KBPressed:
-00006d 308b                      	cpi	r24,0x0B ;Compare with immediate
-00006e f081                      	breq Correct
-00006f c014                      	rjmp NotCorrect
+0000ba 308b                      	cpi	r24,0x0B ;Compare with immediate
+0000bb f081                      	breq Correct
+0000bc c014                      	rjmp NotCorrect
                                  
                                  KFPressed:
-000070 308f                      	cpi	r24,0x0F ;Compare with immediate
-000071 f069                      	breq Correct
-000072 c011                      	rjmp NotCorrect
+0000bd 308f                      	cpi	r24,0x0F ;Compare with immediate
+0000be f069                      	breq Correct
+0000bf c011                      	rjmp NotCorrect
                                  
                                  KEPressed:
-000073 308e                      	cpi	r24,0x0E ;Compare with immediate
-000074 f051                      	breq Correct
-000075 c00e                      	rjmp NotCorrect
+0000c0 308e                      	cpi	r24,0x0E ;Compare with immediate
+0000c1 f051                      	breq Correct
+0000c2 c00e                      	rjmp NotCorrect
                                  
                                  KDPressed:
-000076 308d                      	cpi	r24,0x0D ;Compare with immediate
-000077 f039                      	breq Correct
-000078 c00b                      	rjmp NotCorrect
+0000c3 308d                      	cpi	r24,0x0D ;Compare with immediate
+0000c4 f039                      	breq Correct
+0000c5 c00b                      	rjmp NotCorrect
                                  
                                  KCPressed:
-000079 308c                      	cpi	r24,0x0C ;Compare with immediate
-00007a f021                      	breq Correct
-00007b c008                      	rjmp NotCorrect
+0000c6 308c                      	cpi	r24,0x0C ;Compare with immediate
+0000c7 f021                      	breq Correct
+0000c8 c008                      	rjmp NotCorrect
                                  
                                  KOtherPressed:
                                  	/*sei							;Enable the buzzer*/
-00007c c007                      	rjmp NotCorrect
+0000c9 c007                      	rjmp NotCorrect
                                  
                                  nokeyspressed:
                                  /*	sbi portc,2
                                  	sbi portc,3*/
-00007d 94f8                      	cli
-00007e cf9a                      	rjmp main
+0000ca 94f8                      	cli
+0000cb cf81                      	rjmp main
                                  
                                  Correct:
                                  	; Jump here when correct button is pressed
                                  
                                  	; Load next correct combination from memory
-00007f 9189                      	ld r24,Y+
-000080 95aa                      	dec r26	
-000081 f029                      	breq Win ;Reset if combination finished
+0000cc 9189                      	ld r24,Y+
+0000cd 95aa                      	dec r26	
+0000ce f021                      	breq Win ;Reset if combination finished
                                  
-000082 9842                      	cbi portc,2
-000083 cf95                      	rjmp main
+0000cf 9842                      	cbi portc,2
+0000d0 cf7c                      	rjmp main
                                  
                                  NotCorrect:
                                  	;Jump here when button is wrong
-                                 
-000084 9a42                      	sbi portc,2
-000085 9a43                      	sbi portc,3	
-000086 c001                      	rjmp Reset
+                                 	;sbi portc,3
+0000d1 9a42                      	sbi portc,2
+                                 	/*sbi portc,3	*/
+0000d2 c001                      	rjmp Reset
                                  
                                  Win:
-000087 9843                      	cbi portc,3
+0000d3 9843                      	cbi portc,3
                                  
                                  Reset:
                                  	;When wrong combination 
-000088 e0d1                      	ldi yh, high(COMB_ADDRESS)
-000089 e6c6                      	ldi yl, low(COMB_ADDRESS)
-00008a 9189                      	ld	r24,Y+
-00008b 2fa9                      	mov r26,r25
+0000d4 e0d1                      	ldi yh, high(COMB_ADDRESS)
+0000d5 ebce                      	ldi yl, low(COMB_ADDRESS)
+0000d6 9189                      	ld	r24,Y+
+0000d7 2fa9                      	mov r26,r25
                                  
-00008c cf8c                      	rjmp main
+0000d8 cf74                      	rjmp main
                                  
                                  
                                  .equ msg_length = 6
-00008d 0000
-00008e 0000
-00008f 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-000090 1e1c
-000091 0c0e
-000092 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-000093 1012
-000094 1204
-000095 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-000096 1c12
-000097 1004
-000098 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-000099 101c
-00009a 1604
-00009b 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-00009c 1012
-00009d 1204
-00009e 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-00009f 1e12
-0000a0 0c0e
-0000a1 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
+0000d9 0000
+0000da 0000
+0000db 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
+0000dc 1e1c
+0000dd 0c0e
+0000de 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
+0000df 1012
+0000e0 1204
+0000e1 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+0000e2 1c12
+0000e3 1004
+0000e4 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
+0000e5 101c
+0000e6 1604
+0000e7 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
+0000e8 1012
+0000e9 1204
+0000ea 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+0000eb 1e12
+0000ec 0c0e
+0000ed 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
                                  
-0000a2 1c00
-0000a3 1212
-0000a4 121c
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(279): warning: .cseg .db misalignment - padding zero byte
-0000a5 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-0000a6 0c00
-0000a7 1212
-0000a8 1212
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(280): warning: .cseg .db misalignment - padding zero byte
-0000a9 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
+0000ee 1c00
+0000ef 1212
+0000f0 121c
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(336): warning: .cseg .db misalignment - padding zero byte
+0000f1 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
+0000f2 0c00
+0000f3 1212
+0000f4 1212
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(337): warning: .cseg .db misalignment - padding zero byte
+0000f5 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
                                  
                                  
                                  
@@ -1338,240 +1395,256 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	; r20 contains initial value
                                  	.equ mask = 0b01110000 ; positions 7,6,5
                                  	
-0000aa 2755                      	clr r21 ; clear r21
-0000ab fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-0000ac ef5f                      	ser r21 ; set r21 (0b11111111)
+0000f6 2755                      	clr r21 ; clear r21
+0000f7 fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
+0000f8 ef5f                      	ser r21 ; set r21 (0b11111111)
                                  	; now r21 contains bit 0 of r20 repeated
                                  	
-0000ad 9488                      	clc
-0000ae fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-0000af 9408                      	sec
+0000f9 9488                      	clc
+0000fa fd40                      	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
+0000fb 9408                      	sec
                                  	; now carry is bit 0 of r20
                                  	
-0000b0 2754                      	eor r21, r20 ; xor
-0000b1 7750                      	andi r21, mask
+0000fc 2754                      	eor r21, r20 ; xor
+0000fd 7750                      	andi r21, mask
                                  	; now r21 contains the xorred bits at the right positions
                                  	
-0000b2 e760                      	ldi r22, mask
-0000b3 9560                      	com r22
-0000b4 2346                      	and r20, r22 ; set all masked bits in r20 to 0
+0000fe e760                      	ldi r22, mask
+0000ff 9560                      	com r22
+000100 2346                      	and r20, r22 ; set all masked bits in r20 to 0
                                  	
-0000b5 2b45                      	or r20, r21 ; move masked bits from r21 to r20
-0000b6 9547                      	ror	r20 ; shift right (through carry, that's why we needed to set carry)
-0000b7 9508                      ret
+000101 2b45                      	or r20, r21 ; move masked bits from r21 to r20
+000102 9547                      	ror	r20 ; shift right (through carry, that's why we needed to set carry)
+000103 9508                      ret
                                  
                                  show_r20:
-0000b8 e027                      	ldi r18, 7 ; # rows 
-0000b9 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
+000104 e027                      	ldi r18, 7 ; # rows 
+000105 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
                                  loop_show_next_row_:
-0000ba 930f                      	push r16 ; save row selection
+000106 930f                      	push r16 ; save row selection
                                  	
                                  	; padding
-0000bb e000                      	ldi r16, 0b00000
-0000bc e019                      	ldi r17, 9 ; # segments to pad
+000107 e000                      	ldi r16, 0b00000
+000108 e019                      	ldi r17, 9 ; # segments to pad
                                  loop_padding_:
-0000bd 940e 0132                 	call show_row_segment8
-0000bf 951a                      	dec r17
-0000c0 f7e1                      	brne loop_padding_
+000109 940e 017e                 	call show_row_segment8
+00010b 951a                      	dec r17
+00010c f7e1                      	brne loop_padding_
                                  	
-0000c1 e011                      	ldi r17, 1
+00010d e011                      	ldi r17, 1
                                  loop_row_:
-0000c2 2f04                      	mov	r16, r20 ; copy r20 into r16
-0000c3 940e 0132                 	call show_row_segment8
-0000c5 951a                      	dec r17
-0000c6 f7d9                      	brne loop_row_
+00010e 2f04                      	mov	r16, r20 ; copy r20 into r16
+00010f 940e 017e                 	call show_row_segment8
+000111 951a                      	dec r17
+000112 f7d9                      	brne loop_row_
                                  	
-0000c7 910f                      	pop r16
-0000c8 940e 00e4                 	call select_row
-0000ca 0f00                      	lsl r16 ; select next row
+000113 910f                      	pop r16
+000114 940e 0130                 	call select_row
+000116 0f00                      	lsl r16 ; select next row
                                  	
-0000cb 952a                      	dec r18
-0000cc f769                      	brne loop_show_next_row_
-0000cd 9508                      ret
+000117 952a                      	dec r18
+000118 f769                      	brne loop_show_next_row_
+000119 9508                      ret
                                  
                                  show_msg:
-0000ce e027                      	ldi r18, 7 ; # rows 
-0000cf e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
+00011a e027                      	ldi r18, 7 ; # rows 
+00011b e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
                                  loop_show_next_row:
-0000d0 930f                      	push r16 ; save row selection
+00011c 930f                      	push r16 ; save row selection
                                  	
                                  	; padding
-0000d1 e000                      	ldi r16, 0b00000
-0000d2 e01a                      	ldi r17, 16-msg_length ; # segments to pad
+00011d e000                      	ldi r16, 0b00000
+00011e e01a                      	ldi r17, 16-msg_length ; # segments to pad
                                  loop_padding:
-0000d3 940e 0117                 	call show_row_segment5
-0000d5 951a                      	dec r17
-0000d6 f7e1                      	brne loop_padding
+00011f 940e 0163                 	call show_row_segment5
+000121 951a                      	dec r17
+000122 f7e1                      	brne loop_padding
                                  	
-0000d7 e016                      	ldi r17, msg_length
+000123 e016                      	ldi r17, msg_length
                                  loop_row:
-0000d8 9105                      	lpm	r16, Z+ ; load segment from program memory
-0000d9 940e 0132                 	call show_row_segment8
-0000db 951a                      	dec r17
-0000dc f7d9                      	brne loop_row
+000124 9105                      	lpm	r16, Z+ ; load segment from program memory
+000125 940e 017e                 	call show_row_segment8
+000127 951a                      	dec r17
+000128 f7d9                      	brne loop_row
                                  	
-0000dd 910f                      	pop r16
-0000de 940e 00e4                 	call select_row
-0000e0 0f00                      	lsl r16 ; select next row
+000129 910f                      	pop r16
+00012a 940e 0130                 	call select_row
+00012c 0f00                      	lsl r16 ; select next row
                                  	
-0000e1 952a                      	dec r18
-0000e2 f769                      	brne loop_show_next_row
-0000e3 9508                      ret
+00012d 952a                      	dec r18
+00012e f769                      	brne loop_show_next_row
+00012f 9508                      ret
                                  
                                  
                                  
                                  select_row:
-0000e4 930f                      	push r16
-0000e5 982b                      	cbi portb, 3
+000130 930f                      	push r16
+000131 982b                      	cbi portb, 3
                                  
-0000e6 fd07
-0000e7 9a2b
-0000e8 982d
-0000e9 9a2d
-0000ea 982b                      	shift_reg 7
-0000eb fd06
-0000ec 9a2b
-0000ed 982d
-0000ee 9a2d
-0000ef 982b                      	shift_reg 6
-0000f0 fd05
-0000f1 9a2b
-0000f2 982d
-0000f3 9a2d
-0000f4 982b                      	shift_reg 5
-0000f5 fd04
-0000f6 9a2b
-0000f7 982d
-0000f8 9a2d
-0000f9 982b                      	shift_reg 4
-0000fa fd03
-0000fb 9a2b
-0000fc 982d
-0000fd 9a2d
-0000fe 982b                      	shift_reg 3
-0000ff fd02
-000100 9a2b
-000101 982d
-000102 9a2d
-000103 982b                      	shift_reg 2
-000104 fd01
-000105 9a2b
-000106 982d
-000107 9a2d
-000108 982b                      	shift_reg 1
-000109 fd00
-00010a 9a2b
-00010b 982d
-00010c 9a2d
-00010d 982b                      	shift_reg 0
+000132 fd07
+000133 9a2b
+000134 982d
+000135 9a2d
+000136 982b                      	shift_reg 7
+000137 fd06
+000138 9a2b
+000139 982d
+00013a 9a2d
+00013b 982b                      	shift_reg 6
+00013c fd05
+00013d 9a2b
+00013e 982d
+00013f 9a2d
+000140 982b                      	shift_reg 5
+000141 fd04
+000142 9a2b
+000143 982d
+000144 9a2d
+000145 982b                      	shift_reg 4
+000146 fd03
+000147 9a2b
+000148 982d
+000149 9a2d
+00014a 982b                      	shift_reg 3
+00014b fd02
+00014c 9a2b
+00014d 982d
+00014e 9a2d
+00014f 982b                      	shift_reg 2
+000150 fd01
+000151 9a2b
+000152 982d
+000153 9a2d
+000154 982b                      	shift_reg 1
+000155 fd00
+000156 9a2b
+000157 982d
+000158 9a2d
+000159 982b                      	shift_reg 0
                                  	
                                  	; latch to show row on display
-00010e 9a2c                      	sbi portb, 4
-00010f ef0f                      	ldi r16, 255
+00015a 9a2c                      	sbi portb, 4
+00015b ef0f                      	ldi r16, 255
                                  delayloop1:
-000110 5001                      	subi r16, 1
-000111 f011                      	breq enddelayloop1
-000112 0000                      	nop
-000113 cffc                      	rjmp delayloop1
+00015c 5001                      	subi r16, 1
+00015d f011                      	breq enddelayloop1
+00015e 0000                      	nop
+00015f cffc                      	rjmp delayloop1
                                  enddelayloop1:
-000114 982c                      	cbi portb, 4
+000160 982c                      	cbi portb, 4
                                  	
-000115 910f                      	pop r16
-000116 9508                      ret
+000161 910f                      	pop r16
+000162 9508                      ret
                                  	
                                  ; show a row segment (5 pixels wide)
                                  show_row_segment5:
-000117 982b                      	cbi portb, 3
+000163 982b                      	cbi portb, 3
                                  	
-000118 fd00
-000119 9a2b
-00011a 982d
-00011b 9a2d
-00011c 982b                      	shift_reg 0 ; pixel 0
-00011d fd01
-00011e 9a2b
-00011f 982d
-000120 9a2d
-000121 982b                      	shift_reg 1
-000122 fd02
-000123 9a2b
-000124 982d
-000125 9a2d
-000126 982b                      	shift_reg 2
-000127 fd03
-000128 9a2b
-000129 982d
-00012a 9a2d
-00012b 982b                      	shift_reg 3
-00012c fd04
-00012d 9a2b
-00012e 982d
-00012f 9a2d
-000130 982b                      	shift_reg 4 ; pixel 4	
-000131 9508                      ret
+000164 fd00
+000165 9a2b
+000166 982d
+000167 9a2d
+000168 982b                      	shift_reg 0 ; pixel 0
+000169 fd01
+00016a 9a2b
+00016b 982d
+00016c 9a2d
+00016d 982b                      	shift_reg 1
+00016e fd02
+00016f 9a2b
+000170 982d
+000171 9a2d
+000172 982b                      	shift_reg 2
+000173 fd03
+000174 9a2b
+000175 982d
+000176 9a2d
+000177 982b                      	shift_reg 3
+000178 fd04
+000179 9a2b
+00017a 982d
+00017b 9a2d
+00017c 982b                      	shift_reg 4 ; pixel 4	
+00017d 9508                      ret
                                  
                                  ; show a row segment (8 pixels wide)
                                  show_row_segment8:
-000132 982b                      	cbi portb, 3
+00017e 982b                      	cbi portb, 3
                                  	
-000133 fd00
-000134 9a2b
-000135 982d
-000136 9a2d
-000137 982b                      	shift_reg 0 ; pixel 0
-000138 fd01
-000139 9a2b
-00013a 982d
-00013b 9a2d
-00013c 982b                      	shift_reg 1
-00013d fd02
-00013e 9a2b
-00013f 982d
-000140 9a2d
-000141 982b                      	shift_reg 2
-000142 fd03
-000143 9a2b
-000144 982d
-000145 9a2d
-000146 982b                      	shift_reg 3
-000147 fd04
-000148 9a2b
-000149 982d
-00014a 9a2d
-00014b 982b                      	shift_reg 4
-00014c fd05
-00014d 9a2b
-00014e 982d
-00014f 9a2d
-000150 982b                      	shift_reg 5
-000151 fd06
-000152 9a2b
-000153 982d
-000154 9a2d
-000155 982b                      	shift_reg 6
-000156 fd07
-000157 9a2b
-000158 982d
-000159 9a2d
-00015a 982b                      	shift_reg 7	
-00015b 9508                      ret
+00017f fd00
+000180 9a2b
+000181 982d
+000182 9a2d
+000183 982b                      	shift_reg 0 ; pixel 0
+000184 fd01
+000185 9a2b
+000186 982d
+000187 9a2d
+000188 982b                      	shift_reg 1
+000189 fd02
+00018a 9a2b
+00018b 982d
+00018c 9a2d
+00018d 982b                      	shift_reg 2
+00018e fd03
+00018f 9a2b
+000190 982d
+000191 9a2d
+000192 982b                      	shift_reg 3
+000193 fd04
+000194 9a2b
+000195 982d
+000196 9a2d
+000197 982b                      	shift_reg 4
+000198 fd05
+000199 9a2b
+00019a 982d
+00019b 9a2d
+00019c 982b                      	shift_reg 5
+00019d fd06
+00019e 9a2b
+00019f 982d
+0001a0 9a2d
+0001a1 982b                      	shift_reg 6
+0001a2 fd07
+0001a3 9a2b
+0001a4 982d
+0001a5 9a2d
+0001a6 982b                      	shift_reg 7	
+0001a7 9508                      ret
+                                 
+                                 Timer1OverflowInterrupt:
+0001a8 930f                      	push r16
+0001a9 931f                      	push r17
+                                 
+0001aa ed1c                      	ldi r17,0b11011100 ;To ensure 4Hz with prescaler 64
+0001ab 9310 0084                 	sts TCNT1L,r17
+0001ad e00b                      	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
+0001ae 9300 0085                 	sts TCNT1H,r16
+                                 
+0001b0 911f                      	pop r17
+0001b1 910f                      	pop r16
+                                 
+0001b2 9a32                      	sbi pinc,2 ;Flips the value
+                                 
+0001b3 9518                      	reti
                                  
                                  
                                  ;Definition of memory address of start and end of charbuffer
-00015c 0100                      CHARBUFFER_START: .dw	0x0100
-00015d 010f                      CHARBUFFER_END:  .dw	0x010F
+0001b4 0100                      CHARBUFFER_START: .dw	0x0100
+0001b5 010f                      CHARBUFFER_END:  .dw	0x010F
                                  
                                  CharTable:
-00015e 0c00
-00015f 1212
-000160 1212
-000161 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
-000162 0400
-000163 140c
-000164 0404
-000165 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+0001b6 0c00
+0001b7 1212
+0001b8 1212
+0001b9 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+0001ba 0400
+0001bb 140c
+0001bc 0404
+0001bd 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
                                  
-000166 0500                      COMB_ADDRESS: .dw 0x0500 ;?
+0001be 0500                      COMB_ADDRESS: .dw 0x0500 ;?
                                  
                                  
 
@@ -1591,10 +1664,10 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   3 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   3 z  :   5 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  41 r17:   8 r18:   4 r19:   0 r20:   9 
-r21:   7 r22:   5 r23:   2 r24:  19 r25:   3 r26:   3 r27:   0 r28:   6 
+r13:   0 r14:   0 r15:   0 r16:  55 r17:  16 r18:   4 r19:   0 r20:  13 
+r21:   7 r22:   5 r23:   2 r24:  19 r25:   3 r26:   3 r27:   0 r28:  10 
 r29:   2 r30:   1 r31:   1 
 Registers used: 16 out of 35 (45.7%)
 
@@ -1603,27 +1676,27 @@ Registers used: 16 out of 35 (45.7%)
 andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :   8 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   6 cbi   :  49 cbr   :   0 
 clc   :   1 clh   :   0 cli   :   1 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   1 cp    :   0 cpc   :   0 
-cpi   :  16 cpse  :   0 dec   :   7 eor   :   1 fmul  :   0 fmuls :   0 
+cpi   :  16 cpse  :   0 dec   :   9 eor   :   1 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   1 
-ld    :   3 ldd   :   0 ldi   :  27 lds   :   0 lpm   :   1 lsl   :   2 
+ld    :   3 ldd   :   0 ldi   :  38 lds   :   0 lpm   :   1 lsl   :   2 
 lsr   :   0 mov   :   3 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   9 or    :   1 ori   :   0 out   :   6 pop   :   3 
-push  :   3 rcall :   0 ret   :   6 reti  :   0 rjmp  :  40 rol   :   0 
-ror   :   1 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  16 
+neg   :   0 nop   :  11 or    :   1 ori   :   0 out   :   6 pop   :   7 
+push  :   7 rcall :   0 ret   :   7 reti  :   1 rjmp  :  49 rol   :   0 
+ror   :   1 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  20 
 sbiw  :   0 sbr   :   0 sbrc  :  23 sbrs  :   0 sec   :   1 seh   :   0 
-sei   :   0 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   2 std   :   0 sts   :   0 
+sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
+sez   :   0 sleep :   0 spm   :   0 st    :   4 std   :   0 sts   :   7 
 sub   :   0 subi  :   1 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 34 out of 113 (30.1%)
+Instructions used: 37 out of 113 (32.7%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0002ce    638     80    718   32768   2.2%
+[.cseg] 0x000000 0x00037e    752     80    832   32768   2.5%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
