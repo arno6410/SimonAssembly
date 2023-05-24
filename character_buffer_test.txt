@@ -1,0 +1,61 @@
+;TESTING CHARACTER BUFFER NOT WORKING
+;==========load character buffer with which characters to display=============
+	ldi r24, 8
+	/*ldi r25, 8 ; used as constant for summing*/
+	LDI ZH, high (CHARBUFFER_START); last char should be sent first -> load address to Y 
+	LDI ZL, low (CHARBUFFER_START);
+screen_loop:
+	ldi r23, 0x00
+	st Z+, r23
+	/*adiw Z, 8*/
+	ldi r23, 0x01
+	st Z+,r23
+	/*adiw Z, 8*/
+	dec r24
+	brne screen_loop
+
+/*	;charbuffer goes from 0x0100 to 0x010F which is 16 bytes, one byte for every screen block
+	LDI ZH, high 0x01; last char should be sent first -> load address to Y 
+	LDI ZL, low 0x00 ; last char should be sent first -> load address to Y 
+	ldi r20, 1
+	st Z, r20*/
+
+;==========send column data==============
+; init charbuffer pointer
+	LDI YH, high (CHARBUFFER_END) ; last char should be sent first -> load address to Y 
+	LDI YL, low (CHARBUFFER_END) ; last char should be sent first -> load address to Y 
+	LDI R18, 16 ; number of blocks
+
+;Code for one character on screen
+BlockLoop:
+	;Calculate offset depending on charvalue
+	ld r19, -Y ; pre-decrement Y and load char value pointed to by Y (from data memory/SRAM)
+	LDI zh, high (CharTable<<1) ;load address table of chars into Z
+	LDI zl, low (CharTable<<1) ; load address table of chars into Z ;Calculate offset in chartable and add it to Z
+
+	;Calculate offset in chartable and add it to Z
+	ldi r25, 8	;used for multiplying
+	mul r19,r25	;X*8
+	add zl, r0	;result of multiplication stored in r1 
+	add zh, r1
+	;...
+	
+	;load column data
+	LPM r16, Z ; load data to send to the screen pointed to by Z (from code memory)
+	LDI R20, 5  ; number of shifts for column data per block = number of columns per display block
+	
+	BlockColLoop:
+	; send 5 bits of loaded byte to the screen
+	shift_reg 7
+	shift_reg 6
+	shift_reg 5
+	shift_reg 4
+	shift_reg 3
+
+	DEC R20 ; decrement Rc (number of shifts) (flagZ becomes 1 if equals 0) 
+	BRNE BlockColLoop ;jump back for next data bit
+
+DEC R18 ; decrement Ra (number of blocks) (flagz becomes 1 if equals 0)
+BRNE BlockLoop ;jump back for next block
+
+	
