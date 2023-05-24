@@ -89,7 +89,7 @@ init:
 	;Put combination size in r25
 	ldi r25,0x04
 	mov r26,r25 ;r26 will be used to keep track of the combination
-
+	
 main:
 	
 	/*cli*/
@@ -333,67 +333,14 @@ row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
 row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
 row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
 
+msg: .dw charR, charO, charG, charI, charE, charR
 charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
 charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
+charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
+charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
+charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
 
 
-
-
-lfsr_r20:	; uses r20 (input/output), r21, r22
-	; 8 bit lfsr, 4 taps (8,6,5,4)
-	; r20 contains initial value
-	.equ mask = 0b01110000 ; positions 7,6,5
-	
-	clr r21 ; clear r21
-	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-	ser r21 ; set r21 (0b11111111)
-	; now r21 contains bit 0 of r20 repeated
-	
-	clc
-	sbrc r20, 0 ; skip next line if bit 0 of r20 is 0
-	sec
-	; now carry is bit 0 of r20
-	
-	eor r21, r20 ; xor
-	andi r21, mask
-	; now r21 contains the xorred bits at the right positions
-	
-	ldi r22, mask
-	com r22
-	and r20, r22 ; set all masked bits in r20 to 0
-	
-	or r20, r21 ; move masked bits from r21 to r20
-	ror	r20 ; shift right (through carry, that's why we needed to set carry)
-ret
-
-show_r20:
-	ldi r18, 7 ; # rows 
-	ldi r16, 0b0000001 ; initial row selection (row 1)
-loop_show_next_row_:
-	push r16 ; save row selection
-	
-	; padding
-	ldi r16, 0b00000
-	ldi r17, 9 ; # segments to pad
-loop_padding_:
-	call show_row_segment8
-	dec r17
-	brne loop_padding_
-	
-	ldi r17, 1
-loop_row_:
-	mov	r16, r20 ; copy r20 into r16
-	call show_row_segment8
-	dec r17
-	brne loop_row_
-	
-	pop r16
-	call select_row
-	lsl r16 ; select next row
-	
-	dec r18
-	brne loop_show_next_row_
-ret
 
 show_msg:
 	ldi r18, 7 ; # rows 
@@ -409,10 +356,27 @@ loop_padding:
 	dec r17
 	brne loop_padding
 	
+	ldi yh, high(2*msg)
+	ldi yl, low(2*msg)
+	
 	ldi r17, msg_length
 loop_row:
-	lpm	r16, Z+ ; load segment from program memory
-	call show_row_segment8
+	
+	ld zh, y+
+	ld zl, y+
+	
+	sbiw z, 1
+	push r18
+	subi r18, 8
+	neg r18
+loop_z:
+	adiw z, 1
+	dec r18
+	brne loop_z
+	pop r18
+	
+	lpm	r16, z ; load segment from program memory
+	call show_row_segment5
 	dec r17
 	brne loop_row
 	
