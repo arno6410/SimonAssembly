@@ -46,26 +46,23 @@ init:
 	out portd, r16				;The columns will be the output pins
 
 	;==========TIMER 1: 16 bit==========
-	;For 2Hz (0.5s), should be 4Hz
-/*	ldi r16, 0b00 ;Workaround with ldi and general purpose register because out cant be used with a constant
-	sts tccr1a, r16
-	ldi r16, 0b00000100
-	sts tccr1b, r16 ;tccr1 is the timer control register, not bit addressable, 100 is to set prescaler to 64*/
 
-	ldi r20, 0b00000000 ; CTC mode, int clk;
+	ldi r20, 0b00000000 ; CTC mode, int clk; not necessary?
 	sts tccr1a, r20     
-	ldi r20, 0b000000100 ; prescaler /64
+	ldi r20, 0b00000101 ; prescaler /1024
 	sts tccr1b, r20
 
-	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
+	/*	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
 	sts TCNT1L,r16
 	ldi r16,0X00 ;1011 1101 1100 is 3036 in decimal
+	sts TCNT1H,r16*/
+
+	ldi r17,0b11011100 ;To ensure 1Hz with prescaler 256
+	sts TCNT1L,r17
+	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
 	sts TCNT1H,r16
 
-	
-
-
-	ldi r16, 0b00000001
+	ldi r16, 0b00000100
 	sts timsk1, r16 ;Set toie0 bit to 1, to enable timer/counter0 overflow
 	sei ;Turn on timer (always on?)
 	;====================
@@ -75,23 +72,25 @@ init:
 	ldi zl, low(COMB_ADDRESS)
 	ldi r28, 0x01
 	st Z+, r28 ;Post increment!
-	ldi r28, 0x02
+/*	ldi r28, 0x02
 	st Z+, r28
 	ldi r28, 0x03
 	st Z+, r28
 	ldi r28, 0x04
-	st Z+, r28
+	st Z+, r28*/
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
 	ldi yl, low(COMB_ADDRESS)
 	ld	r24,Y+
 	;Put combination size in r25
-	ldi r25,0x04
+	ldi r25,0x01
 	mov r26,r25 ;r26 will be used to keep track of the combination
 	
 main:
 	
+	rjmp main
+
 	/*cli*/
 	
 	/*call show_msg
@@ -105,6 +104,7 @@ loop:
 	rjmp loop*/
 	
 	
+CheckButtons:
 	
 	/*jmp main*/
 
@@ -290,8 +290,8 @@ KOtherPressed:
 nokeyspressed:
 /*	sbi portc,2
 	sbi portc,3*/
-	cli
-	rjmp main
+
+	ret ;from rcall CheckButtons
 
 Correct:
 	; Jump here when correct button is pressed
@@ -302,7 +302,8 @@ Correct:
 	breq Win ;Reset if combination finished
 
 	cbi portc,2
-	rjmp main
+
+	ret ;from rcall CheckButtons
 
 NotCorrect:
 	;Jump here when button is wrong
@@ -321,7 +322,7 @@ Reset:
 	ld	r24,Y+
 	mov r26,r25
 
-	rjmp main
+	ret ;from rcall CheckButtons
 
 
 .equ msg_length = 6
@@ -446,15 +447,24 @@ Timer1OverflowInterrupt:
 	push r16
 	push r17
 
-	ldi r17,0b11011100 ;To ensure 4Hz with prescaler 64
+	;====1HZ: 49911, prescaler 1024====
+	ldi r17,0b11110111 ; low byte
 	sts TCNT1L,r17
-	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
-	sts TCNT1H,r16
+	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
+	sts TCNT1H,r16	
+
+/*	;====0.5Hz: 34286, prescaler 1024====
+	ldi r17,0b10000101 ; low byte
+	sts TCNT1L,r17
+	ldi r16,0b11101110 ;1110 1110 1000 0101 is 34286 in decimal
+	sts TCNT1H,r16*/
 
 	pop r17
 	pop r16
 
 	sbi pinc,2 ;Flips the value
+
+	rcall CheckButtons
 
 	reti
 
