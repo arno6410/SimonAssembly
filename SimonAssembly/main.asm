@@ -78,13 +78,17 @@ init:
 	st Z+, r28
 	ldi r28, 0x04
 	st Z+, r28
+	ldi r28, 0x05
+	st Z+, r28
+	ldi r28, 0x06
+	st Z+, r28
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
 	ldi yl, low(COMB_ADDRESS)
 	ld	r24,Y+
 	;Put combination size in r25
-	ldi r25,0x04
+	ldi r25,0x01
 	mov r26,r25 ;r26 will be used to keep track of the combination
 	
 main:
@@ -105,8 +109,6 @@ loop:
 	
 	
 CheckButtons:
-	
-	/*jmp main*/
 
 	ldi r20, 0b11110111			;low,high,high,high to see the first row
 	ldi r21, 0b11111011			;high,low,high,high to see the second row
@@ -168,8 +170,6 @@ CheckButtons:
 	rjmp nokeyspressed
 
 K7Pressed:
-/*	cbi portc,2
-	cbi portc,3*/
 	cpi	r24,0x07 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
@@ -272,12 +272,9 @@ KCPressed:
 	rjmp NotCorrect
 
 KOtherPressed:
-	/*sei							;Enable the buzzer*/
 	rjmp NotCorrect
 
 nokeyspressed:
-/*	sbi portc,2
-	sbi portc,3*/
 
 	ret ;from rcall CheckButtons
 
@@ -289,19 +286,17 @@ Correct:
 	dec r26	
 	breq Win ;Reset if combination finished
 
-	cbi portc,2
+	/*cbi portc,2*/
 
 	ret ;from rcall CheckButtons
 
 NotCorrect:
-	;Jump here when button is wrong
-	;sbi portc,3
-	sbi portc,2
-	/*sbi portc,3	*/
+	ldi r25,0x01 ;Reset combination to length = 1
 	rjmp Reset
 
 Win:
 	cbi portc,3
+	inc r25 ;Make the combination one letter longer
 
 Reset:
 	;When wrong combination 
@@ -451,6 +446,7 @@ Timer1OverflowInterrupt:
 	pop r16
 
 	sbi pinc,2 ;Flips the value
+	sbi portc,3 ;Turn of LED 2
 
 	rcall CheckButtons
 
