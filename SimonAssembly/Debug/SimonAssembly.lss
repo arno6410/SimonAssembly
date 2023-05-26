@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Fri May 26 15:06:57 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Fri May 26 17:06:37 2023
 
 [builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc'
 C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc'
@@ -1040,7 +1040,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  .org 0x000
 000000 c020                      rjmp init
                                  .org 0x0020
-000020 c17b                      rjmp Timer1OverflowInterrupt
+000020 c175                      rjmp Timer1OverflowInterrupt
                                  
                                  .macro shift_reg
                                  	sbrc r16, @0 ; bit # of 16 to shift into register
@@ -1098,27 +1098,27 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  
                                  	;Put correct combination into memory
 00003e e0f1                      	ldi zh, high(COMB_ADDRESS)
-00003f ebe3                      	ldi zl, low(COMB_ADDRESS)
+00003f eaed                      	ldi zl, low(COMB_ADDRESS)
 000040 e0c1                      	ldi r28, 0x01
 000041 93c1                      	st Z+, r28 ;Post increment!
-                                 /*	ldi r28, 0x02
-                                 	st Z+, r28
-                                 	ldi r28, 0x03
-                                 	st Z+, r28
-                                 	ldi r28, 0x04
-                                 	st Z+, r28*/
+000042 e0c2                      	ldi r28, 0x02
+000043 93c1                      	st Z+, r28
+000044 e0c3                      	ldi r28, 0x03
+000045 93c1                      	st Z+, r28
+000046 e0c4                      	ldi r28, 0x04
+000047 93c1                      	st Z+, r28
                                  	;...
                                  	;First correct one put into r24
-000042 e0d1                      	ldi yh, high(COMB_ADDRESS)
-000043 ebc3                      	ldi yl, low(COMB_ADDRESS)
-000044 9189                      	ld	r24,Y+
+000048 e0d1                      	ldi yh, high(COMB_ADDRESS)
+000049 eacd                      	ldi yl, low(COMB_ADDRESS)
+00004a 9189                      	ld	r24,Y+
                                  	;Put combination size in r25
-000045 e091                      	ldi r25,0x01
-000046 2fa9                      	mov r26,r25 ;r26 will be used to keep track of the combination
+00004b e094                      	ldi r25,0x04
+00004c 2fa9                      	mov r26,r25 ;r26 will be used to keep track of the combination
                                  	
                                  main:
                                  	
-000047 cfff                      	rjmp main
+00004d cfff                      	rjmp main
                                  
                                  	/*cli*/
                                  	
@@ -1137,473 +1137,461 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	
                                  	/*jmp main*/
                                  
-000048 ef47                      	ldi r20, 0b11110111			;low,high,high,high to see the first row
-000049 ef5b                      	ldi r21, 0b11111011			;high,low,high,high to see the second row
-00004a ef6d                      	ldi r22, 0b11111101			;high,high,low,high to see the third row
-00004b ef7e                      	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
+00004e ef47                      	ldi r20, 0b11110111			;low,high,high,high to see the first row
+00004f ef5b                      	ldi r21, 0b11111011			;high,low,high,high to see the second row
+000050 ef6d                      	ldi r22, 0b11111101			;high,high,low,high to see the third row
+000051 ef7e                      	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
                                  	
-00004c b94b                      	out portd, r20
-00004d 0000                      	nop
-00004e 0000                      	nop
+000052 b94b                      	out portd, r20
+000053 0000                      	nop
+000054 0000                      	nop
                                  
-00004f 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000050 c028                      	rjmp K7Pressed
-000051 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000052 c029                      	rjmp K4Pressed
-000053 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-000054 c02d                      	rjmp K1Pressed
-000055 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000056 c031                      	rjmp KAPressed
+000055 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000056 c028                      	rjmp K7Pressed
+000057 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000058 c029                      	rjmp K4Pressed
+000059 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00005a c02a                      	rjmp K1Pressed
+00005b 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00005c c02b                      	rjmp KAPressed
                                  
-000057 b95b                      	out portd, r21
-000058 0000                      	nop
-000059 0000                      	nop
+00005d b95b                      	out portd, r21
+00005e 0000                      	nop
+00005f 0000                      	nop
                                  
-00005a 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-00005b c02f                      	rjmp K8Pressed		
-00005c 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-00005d c030                      	rjmp K5Pressed
-00005e 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-00005f c031                      	rjmp K2Pressed
-000060 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000061 c035                      	rjmp K0Pressed	
+000060 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000061 c029                      	rjmp K8Pressed		
+000062 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000063 c02a                      	rjmp K5Pressed
+000064 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000065 c02b                      	rjmp K2Pressed
+000066 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000067 c02c                      	rjmp K0Pressed	
                                  	
-000062 b96b                      	out portd, r22
-000063 0000                      	nop
-000064 0000                      	nop
+000068 b96b                      	out portd, r22
+000069 0000                      	nop
+00006a 0000                      	nop
                                  
-000065 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000066 c042                      	rjmp K9Pressed		
-000067 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000068 c043                      	rjmp K6Pressed
-000069 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-00006a c044                      	rjmp K3Pressed
-00006b 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-00006c c048                      	rjmp KBPressed		
+00006b 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+00006c c039                      	rjmp K9Pressed		
+00006d 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+00006e c03a                      	rjmp K6Pressed
+00006f 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+000070 c03b                      	rjmp K3Pressed
+000071 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+000072 c03c                      	rjmp KBPressed		
                                  	
-00006d b97b                      	out portd, r23
-00006e 0000                      	nop
-00006f 0000                      	nop
+000073 b97b                      	out portd, r23
+000074 0000                      	nop
+000075 0000                      	nop
                                  
-000070 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-000071 c046                      	rjmp KFPressed		
-000072 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
-000073 c047                      	rjmp KEPressed
-000074 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
-000075 c048                      	rjmp KDPressed
-000076 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
-000077 c049                      	rjmp KCPressed			
+000076 9b4f                      	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+000077 c03a                      	rjmp KFPressed		
+000078 9b4e                      	sbis pind,6					;Skip next if bit 6 of pin D is 1
+000079 c03b                      	rjmp KEPressed
+00007a 9b4d                      	sbis pind,5					;Skip next if bit 5 of pin D is 1
+00007b c03c                      	rjmp KDPressed
+00007c 9b4c                      	sbis pind,4					;Skip next if bit 4 of pin D is 1
+00007d c03d                      	rjmp KCPressed			
                                  
-000078 c04c                      	rjmp nokeyspressed
+00007e c040                      	rjmp nokeyspressed
                                  
                                  K7Pressed:
                                  /*	cbi portc,2
                                  	cbi portc,3*/
-000079 3087                      	cpi	r24,0x07 ;Compare with immediate
-00007a f0f9                      	breq Jump2C
-00007b c04f                      	rjmp NotCorrect
+00007f 3087                      	cpi	r24,0x07 ;Compare with immediate
+000080 f0b1                      	breq Jump2C
+000081 c043                      	rjmp NotCorrect
                                  
                                  K4Pressed:
-00007c c01f                      	rjmp DELAY
-00007d 9b4e                      	sbis pind,6
-00007e cffd                      	rjmp K4Pressed
-00007f 3084                      	cpi	r24,0x04 ;Compare with immediate
-000080 f0c9                      	breq Jump2C
-000081 c049                      	rjmp NotCorrect
+000082 3084                      	cpi	r24,0x04 ;Compare with immediate
+000083 f099                      	breq Jump2C
+000084 c040                      	rjmp NotCorrect
                                  
                                  K1Pressed:
-000082 c019                      	rjmp DELAY
-000083 9b4d                      	sbis pind,5
-000084 cffd                      	rjmp K1Pressed
 000085 3081                      	cpi	r24,0x01 ;Compare with immediate
-000086 f099                      	breq Jump2C
-000087 c043                      	rjmp NotCorrect
+000086 f081                      	breq Jump2C
+000087 c03d                      	rjmp NotCorrect
                                  
                                  KAPressed:
 000088 308a                      	cpi	r24,0x0A ;Compare with immediate
-000089 f081                      	breq Jump2C
-00008a c040                      	rjmp NotCorrect
+000089 f069                      	breq Jump2C
+00008a c03a                      	rjmp NotCorrect
                                  
                                  K8Pressed:
 00008b 3088                      	cpi	r24,0x08 ;Compare with immediate
-00008c f069                      	breq Jump2C
-00008d c03d                      	rjmp NotCorrect
+00008c f051                      	breq Jump2C
+00008d c037                      	rjmp NotCorrect
                                  
                                  K5Pressed:
 00008e 3085                      	cpi	r24,0x05 ;Compare with immediate
-00008f f051                      	breq Jump2C
-000090 c03a                      	rjmp NotCorrect
+00008f f039                      	breq Jump2C
+000090 c034                      	rjmp NotCorrect
                                  
                                  K2Pressed:
-000091 c00a                      	rjmp DELAY
-000092 9b4d                      	sbis pind,5
-000093 cffd                      	rjmp K2Pressed
-000094 3082                      	cpi	r24,0x02 ;Compare with immediate
-000095 f021                      	breq Jump2C
-000096 c034                      	rjmp NotCorrect
+000091 3082                      	cpi	r24,0x02 ;Compare with immediate
+000092 f021                      	breq Jump2C
+000093 c031                      	rjmp NotCorrect
                                  
                                  K0Pressed:
-000097 3080                      	cpi	r24,0x00 ;Compare with immediate
-000098 f009                      	breq Jump2C
-000099 c031                      	rjmp NotCorrect
+000094 3080                      	cpi	r24,0x00 ;Compare with immediate
+000095 f009                      	breq Jump2C
+000096 c02e                      	rjmp NotCorrect
                                  
                                  ;==========To avoid Relative Branch Out of Reach error==========
                                  Jump2C:
-00009a 940c 00c6                 	jmp Correct
+000097 940c 00c0                 	jmp Correct
                                  ;========================
                                  DELAY:
-00009c 930f                      	push r16
-00009d 931f                      	push r17
-00009e ef0f                      	LDI R16,0xFF
+000099 930f                      	push r16
+00009a 931f                      	push r17
+00009b ef0f                      	LDI R16,0xFF
                                  	Delayloop1_:
-00009f 0000                      		NOP
-0000a0 e014                      		LDI R17,4
+00009c 0000                      		NOP
+00009d e014                      		LDI R17,4
                                  		DelayLoop2:
-0000a1 0000                      			NOP
-0000a2 951a                      			DEC R17
-0000a3 f7e9                      			BRNE DelayLoop2
-0000a4 950a                      		DEC R16
-0000a5 f7c9                      		BRNE DelayLoop1_
-0000a6 911f                      	pop r17
-0000a7 910f                      	pop r16
-0000a8 9508                      RET
+00009e 0000                      			NOP
+00009f 951a                      			DEC R17
+0000a0 f7e9                      			BRNE DelayLoop2
+0000a1 950a                      		DEC R16
+0000a2 f7c9                      		BRNE DelayLoop1_
+0000a3 911f                      	pop r17
+0000a4 910f                      	pop r16
+0000a5 9508                      RET
                                  ;========================
                                  
                                  K9Pressed:
-0000a9 3089                      	cpi	r24,0x09 ;Compare with immediate
-0000aa f0d9                      	breq Correct
-0000ab c01f                      	rjmp NotCorrect
+0000a6 3089                      	cpi	r24,0x09 ;Compare with immediate
+0000a7 f0c1                      	breq Correct
+0000a8 c01c                      	rjmp NotCorrect
                                  
                                  K6Pressed:
-0000ac 3086                      	cpi	r24,0x06 ;Compare with immediate
-0000ad f0c1                      	breq Correct
-0000ae c01c                      	rjmp NotCorrect
+0000a9 3086                      	cpi	r24,0x06 ;Compare with immediate
+0000aa f0a9                      	breq Correct
+0000ab c019                      	rjmp NotCorrect
                                  
                                  K3Pressed:
-0000af cfec                      	rjmp DELAY
-0000b0 9b4d                      	sbis pind,5
-0000b1 cffd                      	rjmp K3Pressed
-0000b2 3083                      	cpi	r24,0x03 ;Compare with immediate
-0000b3 f091                      	breq Correct
-0000b4 c016                      	rjmp NotCorrect
+0000ac 3083                      	cpi	r24,0x03 ;Compare with immediate
+0000ad f091                      	breq Correct
+0000ae c016                      	rjmp NotCorrect
                                  
                                  KBPressed:
-0000b5 308b                      	cpi	r24,0x0B ;Compare with immediate
-0000b6 f079                      	breq Correct
-0000b7 c013                      	rjmp NotCorrect
+0000af 308b                      	cpi	r24,0x0B ;Compare with immediate
+0000b0 f079                      	breq Correct
+0000b1 c013                      	rjmp NotCorrect
                                  
                                  KFPressed:
-0000b8 308f                      	cpi	r24,0x0F ;Compare with immediate
-0000b9 f061                      	breq Correct
-0000ba c010                      	rjmp NotCorrect
+0000b2 308f                      	cpi	r24,0x0F ;Compare with immediate
+0000b3 f061                      	breq Correct
+0000b4 c010                      	rjmp NotCorrect
                                  
                                  KEPressed:
-0000bb 308e                      	cpi	r24,0x0E ;Compare with immediate
-0000bc f049                      	breq Correct
-0000bd c00d                      	rjmp NotCorrect
+0000b5 308e                      	cpi	r24,0x0E ;Compare with immediate
+0000b6 f049                      	breq Correct
+0000b7 c00d                      	rjmp NotCorrect
                                  
                                  KDPressed:
-0000be 308d                      	cpi	r24,0x0D ;Compare with immediate
-0000bf f031                      	breq Correct
-0000c0 c00a                      	rjmp NotCorrect
+0000b8 308d                      	cpi	r24,0x0D ;Compare with immediate
+0000b9 f031                      	breq Correct
+0000ba c00a                      	rjmp NotCorrect
                                  
                                  KCPressed:
-0000c1 308c                      	cpi	r24,0x0C ;Compare with immediate
-0000c2 f019                      	breq Correct
-0000c3 c007                      	rjmp NotCorrect
+0000bb 308c                      	cpi	r24,0x0C ;Compare with immediate
+0000bc f019                      	breq Correct
+0000bd c007                      	rjmp NotCorrect
                                  
                                  KOtherPressed:
                                  	/*sei							;Enable the buzzer*/
-0000c4 c006                      	rjmp NotCorrect
+0000be c006                      	rjmp NotCorrect
                                  
                                  nokeyspressed:
                                  /*	sbi portc,2
                                  	sbi portc,3*/
                                  
-0000c5 9508                      	ret ;from rcall CheckButtons
+0000bf 9508                      	ret ;from rcall CheckButtons
                                  
                                  Correct:
                                  	; Jump here when correct button is pressed
                                  
                                  	; Load next correct combination from memory
-0000c6 9189                      	ld r24,Y+
-0000c7 95aa                      	dec r26	
-0000c8 f021                      	breq Win ;Reset if combination finished
+0000c0 9189                      	ld r24,Y+
+0000c1 95aa                      	dec r26	
+0000c2 f021                      	breq Win ;Reset if combination finished
                                  
-0000c9 9842                      	cbi portc,2
+0000c3 9842                      	cbi portc,2
                                  
-0000ca 9508                      	ret ;from rcall CheckButtons
+0000c4 9508                      	ret ;from rcall CheckButtons
                                  
                                  NotCorrect:
                                  	;Jump here when button is wrong
                                  	;sbi portc,3
-0000cb 9a42                      	sbi portc,2
+0000c5 9a42                      	sbi portc,2
                                  	/*sbi portc,3	*/
-0000cc c001                      	rjmp Reset
+0000c6 c001                      	rjmp Reset
                                  
                                  Win:
-0000cd 9843                      	cbi portc,3
+0000c7 9843                      	cbi portc,3
                                  
                                  Reset:
                                  	;When wrong combination 
-0000ce e0d1                      	ldi yh, high(COMB_ADDRESS)
-0000cf ebc3                      	ldi yl, low(COMB_ADDRESS)
-0000d0 9189                      	ld	r24,Y+
-0000d1 2fa9                      	mov r26,r25
+0000c8 e0d1                      	ldi yh, high(COMB_ADDRESS)
+0000c9 eacd                      	ldi yl, low(COMB_ADDRESS)
+0000ca 9189                      	ld	r24,Y+
+0000cb 2fa9                      	mov r26,r25
                                  
-0000d2 9508                      	ret ;from rcall CheckButtons
+0000cc 9508                      	ret ;from rcall CheckButtons
                                  
                                  
                                  .equ msg_length = 6
-0000d3 0000
-0000d4 0000
-0000d5 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-0000d6 1e1c
-0000d7 0c0e
-0000d8 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-0000d9 1012
-0000da 1204
-0000db 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-0000dc 1c12
-0000dd 1004
-0000de 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-0000df 101c
-0000e0 1604
-0000e1 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-0000e2 1012
-0000e3 1204
-0000e4 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-0000e5 1e12
-0000e6 0c0e
-0000e7 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
+0000cd 0000
+0000ce 0000
+0000cf 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
+0000d0 1e1c
+0000d1 0c0e
+0000d2 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
+0000d3 1012
+0000d4 1204
+0000d5 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+0000d6 1c12
+0000d7 1004
+0000d8 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
+0000d9 101c
+0000da 1604
+0000db 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
+0000dc 1012
+0000dd 1204
+0000de 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
+0000df 1e12
+0000e0 0c0e
+0000e1 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
                                  
-0000e8 00ee
-0000e9 00f2
-0000ea 00f6
-0000eb 00fa
-0000ec 00fe
-0000ed 00ee                      msg: .dw charR, charO, charG, charI, charE, charR
-0000ee 1c00
-0000ef 1212
-0000f0 121c
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(338): warning: .cseg .db misalignment - padding zero byte
-0000f1 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-0000f2 0c00
-0000f3 1212
-0000f4 1212
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(339): warning: .cseg .db misalignment - padding zero byte
-0000f5 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
-0000f6 0c00
-0000f7 1012
-0000f8 1216
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(340): warning: .cseg .db misalignment - padding zero byte
-0000f9 000c                      charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
-0000fa 0e00
-0000fb 0404
-0000fc 0404
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(341): warning: .cseg .db misalignment - padding zero byte
-0000fd 000e                      charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
-0000fe 1e00
-0000ff 1c10
-000100 1010
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(342): warning: .cseg .db misalignment - padding zero byte
-000101 001e                      charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
+0000e2 00e8
+0000e3 00ec
+0000e4 00f0
+0000e5 00f4
+0000e6 00f8
+0000e7 00e8                      msg: .dw charR, charO, charG, charI, charE, charR
+0000e8 1c00
+0000e9 1212
+0000ea 121c
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(326): warning: .cseg .db misalignment - padding zero byte
+0000eb 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
+0000ec 0c00
+0000ed 1212
+0000ee 1212
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(327): warning: .cseg .db misalignment - padding zero byte
+0000ef 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
+0000f0 0c00
+0000f1 1012
+0000f2 1216
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(328): warning: .cseg .db misalignment - padding zero byte
+0000f3 000c                      charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
+0000f4 0e00
+0000f5 0404
+0000f6 0404
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(329): warning: .cseg .db misalignment - padding zero byte
+0000f7 000e                      charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
+0000f8 1e00
+0000f9 1c10
+0000fa 1010
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(330): warning: .cseg .db misalignment - padding zero byte
+0000fb 001e                      charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
                                  
                                  
                                  
                                  show_msg:
-000102 e027                      	ldi r18, 7 ; # rows 
-000103 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
+0000fc e027                      	ldi r18, 7 ; # rows 
+0000fd e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
                                  loop_show_next_row:
-000104 930f                      	push r16 ; save row selection
+0000fe 930f                      	push r16 ; save row selection
                                  	
                                  	; padding
-000105 e000                      	ldi r16, 0b00000
-000106 e01a                      	ldi r17, 16-msg_length ; # segments to pad
+0000ff e000                      	ldi r16, 0b00000
+000100 e01a                      	ldi r17, 16-msg_length ; # segments to pad
                                  loop_padding:
-000107 940e 0157                 	call show_row_segment5
-000109 951a                      	dec r17
-00010a f7e1                      	brne loop_padding
+000101 940e 0151                 	call show_row_segment5
+000103 951a                      	dec r17
+000104 f7e1                      	brne loop_padding
                                  	
-00010b e0d1                      	ldi yh, high(2*msg)
-00010c edc0                      	ldi yl, low(2*msg)
+000105 e0d1                      	ldi yh, high(2*msg)
+000106 ecc4                      	ldi yl, low(2*msg)
                                  	
-00010d e016                      	ldi r17, msg_length
+000107 e016                      	ldi r17, msg_length
                                  loop_row:
                                  	
-00010e 91f9                      	ld zh, y+
-00010f 91e9                      	ld zl, y+
+000108 91f9                      	ld zh, y+
+000109 91e9                      	ld zl, y+
                                  	
-000110 9731                      	sbiw z, 1
-000111 932f                      	push r18
-000112 5028                      	subi r18, 8
-000113 9521                      	neg r18
+00010a 9731                      	sbiw z, 1
+00010b 932f                      	push r18
+00010c 5028                      	subi r18, 8
+00010d 9521                      	neg r18
                                  loop_z:
-000114 9631                      	adiw z, 1
-000115 952a                      	dec r18
-000116 f7e9                      	brne loop_z
-000117 912f                      	pop r18
+00010e 9631                      	adiw z, 1
+00010f 952a                      	dec r18
+000110 f7e9                      	brne loop_z
+000111 912f                      	pop r18
                                  	
-000118 9104                      	lpm	r16, z ; load segment from program memory
-000119 940e 0157                 	call show_row_segment5
-00011b 951a                      	dec r17
-00011c f789                      	brne loop_row
+000112 9104                      	lpm	r16, z ; load segment from program memory
+000113 940e 0151                 	call show_row_segment5
+000115 951a                      	dec r17
+000116 f789                      	brne loop_row
                                  	
-00011d 910f                      	pop r16
-00011e 940e 0124                 	call select_row
-000120 0f00                      	lsl r16 ; select next row
+000117 910f                      	pop r16
+000118 940e 011e                 	call select_row
+00011a 0f00                      	lsl r16 ; select next row
                                  	
-000121 952a                      	dec r18
-000122 f709                      	brne loop_show_next_row
-000123 9508                      ret
+00011b 952a                      	dec r18
+00011c f709                      	brne loop_show_next_row
+00011d 9508                      ret
                                  
                                  
                                  
                                  select_row:
-000124 930f                      	push r16
-000125 982b                      	cbi portb, 3
+00011e 930f                      	push r16
+00011f 982b                      	cbi portb, 3
                                  
-000126 fd07
-000127 9a2b
-000128 982d
-000129 9a2d
-00012a 982b                      	shift_reg 7
-00012b fd06
-00012c 9a2b
-00012d 982d
-00012e 9a2d
-00012f 982b                      	shift_reg 6
-000130 fd05
-000131 9a2b
-000132 982d
-000133 9a2d
-000134 982b                      	shift_reg 5
-000135 fd04
-000136 9a2b
-000137 982d
-000138 9a2d
-000139 982b                      	shift_reg 4
-00013a fd03
-00013b 9a2b
-00013c 982d
-00013d 9a2d
-00013e 982b                      	shift_reg 3
-00013f fd02
-000140 9a2b
-000141 982d
-000142 9a2d
-000143 982b                      	shift_reg 2
-000144 fd01
-000145 9a2b
-000146 982d
-000147 9a2d
-000148 982b                      	shift_reg 1
-000149 fd00
-00014a 9a2b
-00014b 982d
-00014c 9a2d
-00014d 982b                      	shift_reg 0
+000120 fd07
+000121 9a2b
+000122 982d
+000123 9a2d
+000124 982b                      	shift_reg 7
+000125 fd06
+000126 9a2b
+000127 982d
+000128 9a2d
+000129 982b                      	shift_reg 6
+00012a fd05
+00012b 9a2b
+00012c 982d
+00012d 9a2d
+00012e 982b                      	shift_reg 5
+00012f fd04
+000130 9a2b
+000131 982d
+000132 9a2d
+000133 982b                      	shift_reg 4
+000134 fd03
+000135 9a2b
+000136 982d
+000137 9a2d
+000138 982b                      	shift_reg 3
+000139 fd02
+00013a 9a2b
+00013b 982d
+00013c 9a2d
+00013d 982b                      	shift_reg 2
+00013e fd01
+00013f 9a2b
+000140 982d
+000141 9a2d
+000142 982b                      	shift_reg 1
+000143 fd00
+000144 9a2b
+000145 982d
+000146 9a2d
+000147 982b                      	shift_reg 0
                                  	
                                  	; latch to show row on display
-00014e 9a2c                      	sbi portb, 4
-00014f ef0f                      	ldi r16, 255
+000148 9a2c                      	sbi portb, 4
+000149 ef0f                      	ldi r16, 255
                                  delayloop1:
-000150 5001                      	subi r16, 1
-000151 f011                      	breq enddelayloop1
-000152 0000                      	nop
-000153 cffc                      	rjmp delayloop1
+00014a 5001                      	subi r16, 1
+00014b f011                      	breq enddelayloop1
+00014c 0000                      	nop
+00014d cffc                      	rjmp delayloop1
                                  enddelayloop1:
-000154 982c                      	cbi portb, 4
+00014e 982c                      	cbi portb, 4
                                  	
-000155 910f                      	pop r16
-000156 9508                      ret
+00014f 910f                      	pop r16
+000150 9508                      ret
                                  	
                                  ; show a row segment (5 pixels wide)
                                  show_row_segment5:
-000157 982b                      	cbi portb, 3
+000151 982b                      	cbi portb, 3
                                  	
-000158 fd00
-000159 9a2b
-00015a 982d
-00015b 9a2d
-00015c 982b                      	shift_reg 0 ; pixel 0
-00015d fd01
-00015e 9a2b
-00015f 982d
-000160 9a2d
-000161 982b                      	shift_reg 1
-000162 fd02
-000163 9a2b
-000164 982d
-000165 9a2d
-000166 982b                      	shift_reg 2
-000167 fd03
-000168 9a2b
-000169 982d
-00016a 9a2d
-00016b 982b                      	shift_reg 3
-00016c fd04
-00016d 9a2b
-00016e 982d
-00016f 9a2d
-000170 982b                      	shift_reg 4 ; pixel 4	
-000171 9508                      ret
+000152 fd00
+000153 9a2b
+000154 982d
+000155 9a2d
+000156 982b                      	shift_reg 0 ; pixel 0
+000157 fd01
+000158 9a2b
+000159 982d
+00015a 9a2d
+00015b 982b                      	shift_reg 1
+00015c fd02
+00015d 9a2b
+00015e 982d
+00015f 9a2d
+000160 982b                      	shift_reg 2
+000161 fd03
+000162 9a2b
+000163 982d
+000164 9a2d
+000165 982b                      	shift_reg 3
+000166 fd04
+000167 9a2b
+000168 982d
+000169 9a2d
+00016a 982b                      	shift_reg 4 ; pixel 4	
+00016b 9508                      ret
                                  
                                  ; show a row segment (8 pixels wide)
                                  show_row_segment8:
-000172 982b                      	cbi portb, 3
+00016c 982b                      	cbi portb, 3
                                  	
-000173 fd00
-000174 9a2b
-000175 982d
-000176 9a2d
-000177 982b                      	shift_reg 0 ; pixel 0
-000178 fd01
-000179 9a2b
-00017a 982d
-00017b 9a2d
-00017c 982b                      	shift_reg 1
-00017d fd02
-00017e 9a2b
-00017f 982d
-000180 9a2d
-000181 982b                      	shift_reg 2
-000182 fd03
-000183 9a2b
-000184 982d
-000185 9a2d
-000186 982b                      	shift_reg 3
-000187 fd04
-000188 9a2b
-000189 982d
-00018a 9a2d
-00018b 982b                      	shift_reg 4
-00018c fd05
-00018d 9a2b
-00018e 982d
-00018f 9a2d
-000190 982b                      	shift_reg 5
-000191 fd06
-000192 9a2b
-000193 982d
-000194 9a2d
-000195 982b                      	shift_reg 6
-000196 fd07
-000197 9a2b
-000198 982d
-000199 9a2d
-00019a 982b                      	shift_reg 7	
-00019b 9508                      ret
+00016d fd00
+00016e 9a2b
+00016f 982d
+000170 9a2d
+000171 982b                      	shift_reg 0 ; pixel 0
+000172 fd01
+000173 9a2b
+000174 982d
+000175 9a2d
+000176 982b                      	shift_reg 1
+000177 fd02
+000178 9a2b
+000179 982d
+00017a 9a2d
+00017b 982b                      	shift_reg 2
+00017c fd03
+00017d 9a2b
+00017e 982d
+00017f 9a2d
+000180 982b                      	shift_reg 3
+000181 fd04
+000182 9a2b
+000183 982d
+000184 9a2d
+000185 982b                      	shift_reg 4
+000186 fd05
+000187 9a2b
+000188 982d
+000189 9a2d
+00018a 982b                      	shift_reg 5
+00018b fd06
+00018c 9a2b
+00018d 982d
+00018e 9a2d
+00018f 982b                      	shift_reg 6
+000190 fd07
+000191 9a2b
+000192 982d
+000193 9a2d
+000194 982b                      	shift_reg 7	
+000195 9508                      ret
                                  
                                  Timer1OverflowInterrupt:
-00019c 930f                      	push r16
-00019d 931f                      	push r17
+000196 930f                      	push r16
+000197 931f                      	push r17
                                  
                                  	;====1HZ: 49911, prescaler 1024====
-00019e ef17                      	ldi r17,0b11110111 ; low byte
-00019f 9310 0084                 	sts TCNT1L,r17
-0001a1 ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
-0001a2 9300 0085                 	sts TCNT1H,r16	
+000198 ef17                      	ldi r17,0b11110111 ; low byte
+000199 9310 0084                 	sts TCNT1L,r17
+00019b ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
+00019c 9300 0085                 	sts TCNT1H,r16	
                                  
                                  /*	;====0.5Hz: 34286, prescaler 1024====
                                  	ldi r17,0b10000101 ; low byte
@@ -1611,31 +1599,31 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	ldi r16,0b11101110 ;1110 1110 1000 0101 is 34286 in decimal
                                  	sts TCNT1H,r16*/
                                  
-0001a4 911f                      	pop r17
-0001a5 910f                      	pop r16
+00019e 911f                      	pop r17
+00019f 910f                      	pop r16
                                  
-0001a6 9a32                      	sbi pinc,2 ;Flips the value
+0001a0 9a32                      	sbi pinc,2 ;Flips the value
                                  
-0001a7 dea0                      	rcall CheckButtons
+0001a1 deac                      	rcall CheckButtons
                                  
-0001a8 9518                      	reti
+0001a2 9518                      	reti
                                  
                                  
                                  ;Definition of memory address of start and end of charbuffer
-0001a9 0100                      CHARBUFFER_START: .dw	0x0100
-0001aa 010f                      CHARBUFFER_END:  .dw	0x010F
+0001a3 0100                      CHARBUFFER_START: .dw	0x0100
+0001a4 010f                      CHARBUFFER_END:  .dw	0x010F
                                  
                                  CharTable:
-0001ab 0c00
-0001ac 1212
-0001ad 1212
-0001ae 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
-0001af 0400
-0001b0 140c
-0001b1 0404
-0001b2 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+0001a5 0c00
+0001a6 1212
+0001a7 1212
+0001a8 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+0001a9 0400
+0001aa 140c
+0001ab 0404
+0001ac 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
                                  
-0001b3 0500                      COMB_ADDRESS: .dw 0x0500 ;?
+0001ad 0500                      COMB_ADDRESS: .dw 0x0500 ;?
                                  
                                  
 
@@ -1655,10 +1643,10 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   5 z  :   4 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   5 z  :   7 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
 r13:   0 r14:   0 r15:   0 r16:  47 r17:  14 r18:   7 r19:   0 r20:   6 
-r21:   2 r22:   2 r23:   2 r24:  19 r25:   3 r26:   3 r27:   0 r28:   5 
+r21:   2 r22:   2 r23:   2 r24:  19 r25:   3 r26:   3 r27:   0 r28:  11 
 r29:   3 r30:   2 r31:   2 
 Registers used: 16 out of 35 (45.7%)
 
@@ -1673,21 +1661,21 @@ clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :  16 cpse  :   0 dec   :   7 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   1 
-ld    :   5 ldd   :   0 ldi   :  31 lds   :   0 lpm   :   2 lsl   :   1 
+ld    :   5 ldd   :   0 ldi   :  34 lds   :   0 lpm   :   2 lsl   :   1 
 lsr   :   0 mov   :   2 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   1 nop   :  11 or    :   0 ori   :   0 out   :   6 pop   :   7 
-push  :   7 rcall :   1 ret   :   8 reti  :   1 rjmp  :  47 rol   :   0 
-ror   :   0 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  20 
+push  :   7 rcall :   1 ret   :   8 reti  :   1 rjmp  :  39 rol   :   0 
+ror   :   0 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  16 
 sbiw  :   1 sbr   :   0 sbrc  :  21 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   1 std   :   0 sts   :   7 
+sez   :   0 sleep :   0 spm   :   0 st    :   4 std   :   0 sts   :   7 
 sub   :   0 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
 Instructions used: 30 out of 113 (26.5%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000368    694    116    810   32768   2.5%
+[.cseg] 0x000000 0x00035c    682    116    798   32768   2.4%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

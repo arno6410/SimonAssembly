@@ -72,19 +72,19 @@ init:
 	ldi zl, low(COMB_ADDRESS)
 	ldi r28, 0x01
 	st Z+, r28 ;Post increment!
-/*	ldi r28, 0x02
+	ldi r28, 0x02
 	st Z+, r28
 	ldi r28, 0x03
 	st Z+, r28
 	ldi r28, 0x04
-	st Z+, r28*/
+	st Z+, r28
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
 	ldi yl, low(COMB_ADDRESS)
 	ld	r24,Y+
 	;Put combination size in r25
-	ldi r25,0x01
+	ldi r25,0x04
 	mov r26,r25 ;r26 will be used to keep track of the combination
 	
 main:
@@ -175,17 +175,11 @@ K7Pressed:
 	rjmp NotCorrect
 
 K4Pressed:
-	rjmp DELAY
-	sbis pind,6
-	rjmp K4Pressed
 	cpi	r24,0x04 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
 
 K1Pressed:
-	rjmp DELAY
-	sbis pind,5
-	rjmp K1Pressed
 	cpi	r24,0x01 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
@@ -206,9 +200,6 @@ K5Pressed:
 	rjmp NotCorrect
 
 K2Pressed:
-	rjmp DELAY
-	sbis pind,5
-	rjmp K2Pressed
 	cpi	r24,0x02 ;Compare with immediate
 	breq Jump2C
 	rjmp NotCorrect
@@ -251,9 +242,6 @@ K6Pressed:
 	rjmp NotCorrect
 
 K3Pressed:
-	rjmp DELAY
-	sbis pind,5
-	rjmp K3Pressed
 	cpi	r24,0x03 ;Compare with immediate
 	breq Correct
 	rjmp NotCorrect
