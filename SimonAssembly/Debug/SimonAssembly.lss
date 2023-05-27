@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Fri May 26 17:34:06 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sat May 27 21:13:22 2023
 
-[builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc'
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc'
-[builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328Pdef.inc'
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\m328pdef.inc'
+[builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328Pdef.inc'
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328pdef.inc'
+[builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328Pdef.inc'
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328pdef.inc'
                                  
                                  ;
                                  
@@ -1098,7 +1098,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  
                                  	;Put correct combination into memory
 00003e e0f1                      	ldi zh, high(COMB_ADDRESS)
-00003f ebe2                      	ldi zl, low(COMB_ADDRESS)
+00003f ebed                      	ldi zl, low(COMB_ADDRESS)
 000040 e0c1                      	ldi r28, 0x01
 000041 93c1                      	st Z+, r28 ;Post increment!
 000042 e0c2                      	ldi r28, 0x02
@@ -1114,7 +1114,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  	;...
                                  	;First correct one put into r24
 00004c e0d1                      	ldi yh, high(COMB_ADDRESS)
-00004d ebc2                      	ldi yl, low(COMB_ADDRESS)
+00004d ebcd                      	ldi yl, low(COMB_ADDRESS)
 00004e 9189                      	ld	r24,Y+
                                  	;Put combination size in r25
 00004f e091                      	ldi r25,0x01
@@ -1330,7 +1330,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
                                  Reset:
                                  	;When wrong combination 
 0000cc e0d1                      	ldi yh, high(COMB_ADDRESS)
-0000cd ebc2                      	ldi yl, low(COMB_ADDRESS)
+0000cd ebcd                      	ldi yl, low(COMB_ADDRESS)
 0000ce 9189                      	ld	r24,Y+
 0000cf 2fa9                      	mov r26,r25
                                  
@@ -1369,27 +1369,27 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
 0000ec 1c00
 0000ed 1212
 0000ee 121c
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(321): warning: .cseg .db misalignment - padding zero byte
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(321): warning: .cseg .db misalignment - padding zero byte
 0000ef 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
 0000f0 0c00
 0000f1 1212
 0000f2 1212
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(322): warning: .cseg .db misalignment - padding zero byte
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(322): warning: .cseg .db misalignment - padding zero byte
 0000f3 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
 0000f4 0c00
 0000f5 1012
 0000f6 1216
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(323): warning: .cseg .db misalignment - padding zero byte
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(323): warning: .cseg .db misalignment - padding zero byte
 0000f7 000c                      charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
 0000f8 0e00
 0000f9 0404
 0000fa 0404
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(324): warning: .cseg .db misalignment - padding zero byte
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(324): warning: .cseg .db misalignment - padding zero byte
 0000fb 000e                      charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
 0000fc 1e00
 0000fd 1c10
 0000fe 1010
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm(325): warning: .cseg .db misalignment - padding zero byte
+C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(325): warning: .cseg .db misalignment - padding zero byte
 0000ff 001e                      charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
                                  
                                  
@@ -1582,44 +1582,54 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssemb
 00019a 930f                      	push r16
 00019b 931f                      	push r17
                                  
+00019c b003                      	IN R0,PINB					;Put value of PINB in R0 (entire byte)
+00019d fa00                      	BST R0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+                                 	;The switch is high if the T flag is cleared
+00019e f43e                      	BRTC EasyDifficulty				;Branch of the T flag is cleared
+                                 
+                                 HardDifficulty:
+                                 	;===1.666Hz: 56161, prescaler 1024====
+00019f e611                      	ldi r17,0b01100001 ; low byte
+0001a0 9310 0084                 	sts TCNT1L,r17
+0001a2 ed0b                      	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
+0001a3 9300 0085                 	sts TCNT1H,r16
+0001a5 c007                      	rjmp OFContinue
+                                 
+                                 EasyDifficulty:
                                  	;====1HZ: 49911, prescaler 1024====
-00019c ef17                      	ldi r17,0b11110111 ; low byte
-00019d 9310 0084                 	sts TCNT1L,r17
-00019f ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
-0001a0 9300 0085                 	sts TCNT1H,r16	
+0001a6 ef17                      	ldi r17,0b11110111 ; low byte
+0001a7 9310 0084                 	sts TCNT1L,r17
+0001a9 ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
+0001aa 9300 0085                 	sts TCNT1H,r16	
+0001ac c000                      	rjmp OFContinue
                                  
-                                 /*	;====0.5Hz: 34286, prescaler 1024====
-                                 	ldi r17,0b10000101 ; low byte
-                                 	sts TCNT1L,r17
-                                 	ldi r16,0b11101110 ;1110 1110 1000 0101 is 34286 in decimal
-                                 	sts TCNT1H,r16*/
+                                 OFContinue:
+0001ad 911f                      	pop r17
+0001ae 910f                      	pop r16
                                  
-0001a2 911f                      	pop r17
-0001a3 910f                      	pop r16
+0001af 9a32                      	sbi pinc,2 ;Flips the value
+0001b0 9a43                      	sbi portc,3 ;Turn of LED 2
                                  
-0001a4 9a32                      	sbi pinc,2 ;Flips the value
-0001a5 9a43                      	sbi portc,3 ;Turn of LED 2
+0001b1 dea0                      	rcall CheckButtons
                                  
-0001a6 deab                      	rcall CheckButtons
-                                 
-0001a7 9518                      	reti
+0001b2 9518                      	reti
                                  
                                  
                                  ;Definition of memory address of start and end of charbuffer
-0001a8 0100                      CHARBUFFER_START: .dw	0x0100
-0001a9 010f                      CHARBUFFER_END:  .dw	0x010F
+0001b3 0100                      CHARBUFFER_START: .dw	0x0100
+0001b4 010f                      CHARBUFFER_END:  .dw	0x010F
                                  
                                  CharTable:
-0001aa 0c00
-0001ab 1212
-0001ac 1212
-0001ad 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
-0001ae 0400
-0001af 140c
-0001b0 0404
-0001b1 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+0001b5 0c00
+0001b6 1212
+0001b7 1212
+0001b8 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+0001b9 0400
+0001ba 140c
+0001bb 0404
+0001bc 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
                                  
-0001b2 0500                      COMB_ADDRESS: .dw 0x0500 ;?
+0001bd 0500                      COMB_ADDRESS: .dw 0x0500 ;?
                                  
                                  
 
@@ -1639,39 +1649,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   5 z  :   9 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   5 z  :   9 r0 :   2 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  47 r17:  14 r18:   7 r19:   0 r20:   6 
+r13:   0 r14:   0 r15:   0 r16:  49 r17:  16 r18:   7 r19:   0 r20:   6 
 r21:   2 r22:   2 r23:   2 r24:  19 r25:   5 r26:   3 r27:   0 r28:  15 
 r29:   3 r30:   2 r31:   2 
-Registers used: 16 out of 35 (45.7%)
+Registers used: 17 out of 35 (48.6%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   1 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   3 cbi   :  48 cbr   :   0 
+brne  :   6 brpl  :   0 brsh  :   0 brtc  :   1 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   1 call  :   3 cbi   :  48 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :  16 cpse  :   0 dec   :   7 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 jmp   :   1 
-ld    :   5 ldd   :   0 ldi   :  37 lds   :   0 lpm   :   2 lsl   :   1 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   1 jmp   :   1 
+ld    :   5 ldd   :   0 ldi   :  39 lds   :   0 lpm   :   2 lsl   :   1 
 lsr   :   0 mov   :   2 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   1 nop   :  11 or    :   0 ori   :   0 out   :   6 pop   :   7 
-push  :   7 rcall :   1 ret   :   8 reti  :   1 rjmp  :  39 rol   :   0 
+push  :   7 rcall :   1 ret   :   8 reti  :   1 rjmp  :  41 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  16 
 sbiw  :   1 sbr   :   0 sbrc  :  21 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   0 sts   :   7 
+sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   0 sts   :   9 
 sub   :   0 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 31 out of 113 (27.4%)
+Instructions used: 34 out of 113 (30.1%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000366    692    116    808   32768   2.5%
+[.cseg] 0x000000 0x00037c    714    116    830   32768   2.5%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

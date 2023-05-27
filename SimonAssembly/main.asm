@@ -373,18 +373,28 @@ Timer1OverflowInterrupt:
 	push r16
 	push r17
 
+	IN R0,PINB					;Put value of PINB in R0 (entire byte)
+	BST R0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+	;The switch is high if the T flag is cleared
+	BRTC EasyDifficulty				;Branch of the T flag is cleared
+
+HardDifficulty:
+	;===1.666Hz: 56161, prescaler 1024====
+	ldi r17,0b01100001 ; low byte
+	sts TCNT1L,r17
+	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
+	sts TCNT1H,r16
+	rjmp OFContinue
+
+EasyDifficulty:
 	;====1HZ: 49911, prescaler 1024====
 	ldi r17,0b11110111 ; low byte
 	sts TCNT1L,r17
 	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
 	sts TCNT1H,r16	
+	rjmp OFContinue
 
-/*	;====0.5Hz: 34286, prescaler 1024====
-	ldi r17,0b10000101 ; low byte
-	sts TCNT1L,r17
-	ldi r16,0b11101110 ;1110 1110 1000 0101 is 34286 in decimal
-	sts TCNT1H,r16*/
-
+OFContinue:
 	pop r17
 	pop r16
 
