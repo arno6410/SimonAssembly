@@ -70,18 +70,18 @@ init:
 	;Put correct combination into memory
 	ldi zh, high(COMB_ADDRESS)
 	ldi zl, low(COMB_ADDRESS)
-	ldi r28, 0x01
-	st Z+, r28 ;Post increment!
-	ldi r28, 0x02
-	st Z+, r28
-	ldi r28, 0x03
-	st Z+, r28
-	ldi r28, 0x04
-	st Z+, r28
-	ldi r28, 0x05
-	st Z+, r28
-	ldi r28, 0x06
-	st Z+, r28
+	ldi r16, 0x01
+	st Z+, r16 ;Post increment!
+	ldi r16, 0x02
+	st Z+, r16
+	ldi r16, 0x03
+	st Z+, r16
+	ldi r16, 0x04
+	st Z+, r16
+	ldi r16, 0x05
+	st Z+, r16
+	ldi r16, 0x06
+	st Z+, r16
 	;...
 	;First correct one put into r24
 	ldi yh, high(COMB_ADDRESS)
@@ -275,7 +275,7 @@ KOtherPressed:
 	rjmp NotCorrect
 
 nokeyspressed:
-
+	
 	ret ;from rcall CheckButtons
 
 Correct:
@@ -292,6 +292,7 @@ Correct:
 
 NotCorrect:
 	ldi r25,0x01 ;Reset combination to length = 1
+	sbi portc,3 ;Turn off LED 2
 	rjmp Reset
 
 Win:
@@ -325,52 +326,6 @@ charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
 charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
 
 
-
-show_msg:
-	ldi r18, 7 ; # rows 
-	ldi r16, 0b0000001 ; initial row selection (row 1)
-loop_show_next_row:
-	push r16 ; save row selection
-	
-	; padding
-	ldi r16, 0b00000
-	ldi r17, 16-msg_length ; # segments to pad
-loop_padding:
-	call show_row_segment5
-	dec r17
-	brne loop_padding
-	
-	ldi yh, high(2*msg)
-	ldi yl, low(2*msg)
-	
-	ldi r17, msg_length
-loop_row:
-	
-	ld zh, y+
-	ld zl, y+
-	
-	sbiw z, 1
-	push r18
-	subi r18, 8
-	neg r18
-loop_z:
-	adiw z, 1
-	dec r18
-	brne loop_z
-	pop r18
-	
-	lpm	r16, z ; load segment from program memory
-	call show_row_segment5
-	dec r17
-	brne loop_row
-	
-	pop r16
-	call select_row
-	lsl r16 ; select next row
-	
-	dec r18
-	brne loop_show_next_row
-ret
 
 
 
@@ -412,19 +367,7 @@ show_row_segment5:
 	shift_reg 4 ; pixel 4	
 ret
 
-; show a row segment (8 pixels wide)
-show_row_segment8:
-	cbi portb, 3
-	
-	shift_reg 0 ; pixel 0
-	shift_reg 1
-	shift_reg 2
-	shift_reg 3
-	shift_reg 4
-	shift_reg 5
-	shift_reg 6
-	shift_reg 7	
-ret
+
 
 Timer1OverflowInterrupt:
 	push r16
@@ -446,8 +389,9 @@ Timer1OverflowInterrupt:
 	pop r16
 
 	sbi pinc,2 ;Flips the value
-	sbi portc,3 ;Turn of LED 2
-
+	;sbi portc,3 ;Turn off LED 2
+	
+	sbis portc,2 ; only check buttons on rising edge
 	rcall CheckButtons
 
 	reti
