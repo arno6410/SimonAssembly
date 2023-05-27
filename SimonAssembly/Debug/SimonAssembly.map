@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\SimonAssembly\SimonAssembly\main.asm Fri May 26 17:34:06 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sat May 27 21:13:22 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -695,7 +695,7 @@ EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000021
 CSEG Timer1OverflowInterrupt 0000019a
-CSEG COMB_ADDRESS 000001b2
+CSEG COMB_ADDRESS 000001bd
 CSEG main         00000051
 CSEG CheckButtons 00000052
 CSEG K7Pressed    00000083
@@ -748,6 +748,9 @@ CSEG select_row   00000122
 CSEG delayloop1   0000014e
 CSEG enddelayloop1 00000152
 CSEG show_row_segment8 00000170
-CSEG CHARBUFFER_START 000001a8
-CSEG CHARBUFFER_END 000001a9
-CSEG CharTable    000001aa
+CSEG EasyDifficulty 000001a6
+CSEG HardDifficulty 0000019f
+CSEG OFContinue   000001ad
+CSEG CHARBUFFER_START 000001b3
+CSEG CHARBUFFER_END 000001b4
+CSEG CharTable    000001b5
