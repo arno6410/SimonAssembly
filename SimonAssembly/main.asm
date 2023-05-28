@@ -387,12 +387,12 @@ Correct:
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
 	
-	add zl, r6
+	add zl, r6 ;add r6 since this is the current amount of correct symbols in a row
 	adc zh, r1
 	lpm r24, z
 	cp r6,r25 ; check to see if nth correct button == total correct length	
-	inc r6
 	breq Win ;Reset if combination finished
+	inc r6
 
 	/*cbi portc,2*/
 
