@@ -24,11 +24,11 @@ carry_cleared:
 	sbi portb,5
 .endmacro
 
-.def showDisplay = r3
+.def show_display = r3
 
 init:
-	clr showDisplay
-	com showDisplay
+	clr show_display
+	com show_display
 	; init display
 	sbi ddrb, 3
 	sbi ddrb, 4
@@ -82,7 +82,7 @@ init:
 	
 	
 main:
-	sbrc showDisplay, 1
+	sbrc show_display, 1
 	rcall show_buffer
 	
 	rjmp main
@@ -370,7 +370,7 @@ win:
 
 reset:
 	;When wrong combination 
-	com showDisplay ; invert r3 -> make display visible
+	com show_display ; invert r3 -> make display visible
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
 	lpm	r24,z+
@@ -402,7 +402,7 @@ timer_overflow_interrupt:
 
 	pop r16
 
-	clr showDisplay
+	clr show_display
 	
 	
 	sbi pinc,2 ;Flips the value
