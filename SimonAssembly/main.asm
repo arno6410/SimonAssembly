@@ -91,10 +91,11 @@ init:
 	ldi zl, low(2*sequence)
 	lpm	r24,z+
 	;Put combination size in r25
-	ldi r25,0x0
+	ldi r25,0x01
 	mov r6,r25 ;r6 will be used to keep track of the combination
-	inc r6
+	/*inc r6*/
 	mov r18, r6
+	/*mov r9,r25	;r9 stores the current winning combination length*/
 loop_seq:
 	
 	ldi yl, low(0x0100)
@@ -386,10 +387,11 @@ Correct:
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
 	
-	add zl, r25
+	add zl, r6
 	adc zh, r1
 	lpm r24, z
-	inc r6	
+	cp r6,r25 ; check to see if nth correct button == total correct length	
+	inc r6
 	breq Win ;Reset if combination finished
 
 	/*cbi portc,2*/
@@ -410,10 +412,13 @@ Reset:
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
 	lpm	r24,z+
+	push r25
+	ldi r25,0x01
 	mov r6,r25
+	pop r25
 	
 finishCheckButtons:
-ret ;from rcall CheckButtons
+	ret ;from rcall CheckButtons
 
 
 

@@ -24,14 +24,13 @@
  </OUTPUT_FILES>
  <LABELS>
   <init><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>27</LINE></init>
-  <Timer1OverflowInterrupt><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>419</LINE></Timer1OverflowInterrupt>
-  <COMB_ADDRESS><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>489</LINE></COMB_ADDRESS>
+  <Timer1OverflowInterrupt><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>426</LINE></Timer1OverflowInterrupt>
   <sequence><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>157</LINE></sequence>
-  <loop_seq><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>98</LINE></loop_seq>
-  <loop_load_buffer><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>106</LINE></loop_load_buffer>
-  <noPad><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>118</LINE></noPad>
-  <skipp><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>120</LINE></skipp>
-  <main><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>127</LINE></main>
+  <loop_seq><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>99</LINE></loop_seq>
+  <loop_load_buffer><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>107</LINE></loop_load_buffer>
+  <noPad><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>119</LINE></noPad>
+  <skipp><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>121</LINE></skipp>
+  <main><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>128</LINE></main>
   <loop_show><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>131</LINE></loop_show>
   <show_buffer><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>159</LINE></show_buffer>
   <char0><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>139</LINE></char0>
@@ -56,37 +55,37 @@
   <loop_segment5><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>191</LINE></loop_segment5>
   <loop_select_row><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>201</LINE></loop_select_row>
   <loop_delay><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>211</LINE></loop_delay>
-  <CheckButtons><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>234</LINE></CheckButtons>
-  <K7Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>295</LINE></K7Pressed>
-  <K4Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>300</LINE></K4Pressed>
-  <K1Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>305</LINE></K1Pressed>
-  <KAPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>310</LINE></KAPressed>
-  <K8Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>315</LINE></K8Pressed>
-  <K5Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>320</LINE></K5Pressed>
-  <K2Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>325</LINE></K2Pressed>
-  <K0Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>330</LINE></K0Pressed>
-  <K9Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>339</LINE></K9Pressed>
-  <K6Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>344</LINE></K6Pressed>
-  <K3Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>349</LINE></K3Pressed>
-  <KBPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>354</LINE></KBPressed>
-  <KFPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>359</LINE></KFPressed>
-  <KEPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>364</LINE></KEPressed>
-  <KDPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>369</LINE></KDPressed>
-  <KCPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>374</LINE></KCPressed>
-  <nokeyspressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>382</LINE></nokeyspressed>
-  <Jump2C><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>336</LINE></Jump2C>
-  <NotCorrect><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>397</LINE></NotCorrect>
-  <Correct><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>385</LINE></Correct>
-  <KOtherPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>379</LINE></KOtherPressed>
-  <finishCheckButtons><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>413</LINE></finishCheckButtons>
-  <Win><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>402</LINE></Win>
-  <Reset><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>406</LINE></Reset>
-  <EasyDifficulty><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>438</LINE></EasyDifficulty>
-  <HardDifficulty><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>430</LINE></HardDifficulty>
-  <OFContinue><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>446</LINE></OFContinue>
-  <loop_seq2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>458</LINE></loop_seq2>
-  <loop_load_buffer2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>466</LINE></loop_load_buffer2>
-  <noPad2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>478</LINE></noPad2>
-  <skipp2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>480</LINE></skipp2>
+  <CheckButtons><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>232</LINE></CheckButtons>
+  <K7Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>293</LINE></K7Pressed>
+  <K4Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>298</LINE></K4Pressed>
+  <K1Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>303</LINE></K1Pressed>
+  <KAPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>308</LINE></KAPressed>
+  <K8Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>313</LINE></K8Pressed>
+  <K5Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>318</LINE></K5Pressed>
+  <K2Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>323</LINE></K2Pressed>
+  <K0Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>328</LINE></K0Pressed>
+  <K9Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>337</LINE></K9Pressed>
+  <K6Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>342</LINE></K6Pressed>
+  <K3Pressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>347</LINE></K3Pressed>
+  <KBPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>352</LINE></KBPressed>
+  <KFPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>357</LINE></KFPressed>
+  <KEPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>362</LINE></KEPressed>
+  <KDPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>367</LINE></KDPressed>
+  <KCPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>372</LINE></KCPressed>
+  <nokeyspressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>380</LINE></nokeyspressed>
+  <Jump2C><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>334</LINE></Jump2C>
+  <NotCorrect><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>401</LINE></NotCorrect>
+  <Correct><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>383</LINE></Correct>
+  <KOtherPressed><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>377</LINE></KOtherPressed>
+  <finishCheckButtons><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>420</LINE></finishCheckButtons>
+  <Win><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>406</LINE></Win>
+  <Reset><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>410</LINE></Reset>
+  <EasyDifficulty><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>443</LINE></EasyDifficulty>
+  <HardDifficulty><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>435</LINE></HardDifficulty>
+  <OFContinue><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>451</LINE></OFContinue>
+  <loop_seq2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>461</LINE></loop_seq2>
+  <loop_load_buffer2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>469</LINE></loop_load_buffer2>
+  <noPad2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>481</LINE></noPad2>
+  <skipp2><FILE>C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm</FILE><LINE>483</LINE></skipp2>
  </LABELS>
 </ASSEMBLER_INFO>
