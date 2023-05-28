@@ -9,7 +9,7 @@
 .org 0x000
 rjmp init
 .org 0x0020
-rjmp TimerOverflowInterrupt
+rjmp timer_overflow_interrupt
 
 .include "m328pdef.inc"		;Load addresses of IO registers
 ;.include "test.asm"
@@ -108,7 +108,9 @@ empty: .db 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0
 ;uncomment to select a combination
 ;sequence: .db 0x02, 0x0A, 0x0C, 0x04, 0x00, 0x01, 0x07, 0x0B, 0x03, 0x04, 0x0A, 0x0F, 0x05, 0x0E, 0x01, 0x06
 ;sequence: .db 0x01, 0x09, 0x0A, 0x0C, 0x03, 0x05, 0x0E, 0x01, 0x00, 0x09, 0x0C, 0x0D, 0x04, 0x0F, 0x00, 0x01
-sequence: .db 0x0D, 0x0A, 0x0B, 0x05, 0x02, 0x0D, 0x09, 0x0D, 0x04, 0x0D, 0x0D, 0x0C, 0x0B, 0x0E, 0x09, 0x06
+/*sequence: .db 0x0D, 0x0A, 0x0B, 0x05, 0x02, 0x0D, 0x09, 0x0D, 0x04, 0x0D, 0x0D, 0x0C, 0x0B, 0x0E, 0x09, 0x06*/
+sequence: .db 0x07, 0x05, 0x09, 0x0D, 0x03, 0x0B, 0x0F, 0x09, 0x0F, 0x04, 0x02, 0x00, 0x0F, 0x0D, 0x03, 0x07
+
 
 show_buffer: ; uses r1, r2, r16, 17, 18, 21
 	push r16
@@ -187,7 +189,7 @@ ret
 
 
 
-CheckButtons:
+check_buttons:
 
 	ldi r20, 0b11110111			;low,high,high,high to see the first row
 	ldi r21, 0b11111011			;high,low,high,high to see the second row
@@ -195,154 +197,150 @@ CheckButtons:
 	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
 	
 	out portd, r20
-	nop
+	nop	
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp K7Pressed
+	rjmp k7_pressed
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp K4Pressed
+	rjmp k4_pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp K1Pressed
+	rjmp k1_pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp KAPressed
+	rjmp kA_pressed
 
 	out portd, r21
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp K8Pressed		
+	rjmp k8_pressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp K5Pressed
+	rjmp k5_pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp K2Pressed
+	rjmp k2_pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp K0Pressed	
+	rjmp k0_pressed	
 	
 	out portd, r22
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp K9Pressed		
+	rjmp k9_pressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp K6Pressed
+	rjmp k6_pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp K3Pressed
+	rjmp k3_pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp KBPressed		
+	rjmp kB_pressed		
 	
 	out portd, r23
 	nop
 	nop
 
 	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
-	rjmp KFPressed		
+	rjmp kF_pressed		
 	sbis pind,6					;Skip next if bit 6 of pin D is 1
-	rjmp KEPressed
+	rjmp kE_pressed
 	sbis pind,5					;Skip next if bit 5 of pin D is 1
-	rjmp KDPressed
+	rjmp kD_pressed
 	sbis pind,4					;Skip next if bit 4 of pin D is 1
-	rjmp KCPressed			
+	rjmp kC_pressed			
 
-	rjmp nokeyspressed
+	rjmp no_keys_pressed
 
-K7Pressed:
+k7_pressed:
 	cpi	r24,0x07 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K4Pressed:
+k4_pressed:
 	cpi	r24,0x04 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K1Pressed:
+k1_pressed:
 	cpi	r24,0x01 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-KAPressed:
+kA_pressed:
 	cpi	r24,0x0A ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K8Pressed:
+k8_pressed:
 	cpi	r24,0x08 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K5Pressed:
+k5_pressed:
 	cpi	r24,0x05 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K2Pressed:
+k2_pressed:
 	cpi	r24,0x02 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-K0Pressed:
+k0_pressed:
 	cpi	r24,0x00 ;Compare with immediate
-	breq Jump2C
-	rjmp NotCorrect
+	breq jump_to_correct
+	rjmp not_correct
 
-;==========To avoid Relative Branch Out of Reach error==========
-Jump2C:
-	jmp Correct
+jump_to_correct: ;To avoid Relative Branch Out of Reach error
+	jmp correct
 
-K9Pressed:
+k9_pressed:
 	cpi	r24,0x09 ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-K6Pressed:
+k6_pressed:
 	cpi	r24,0x06 ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-K3Pressed:
+k3_pressed:
 	cpi	r24,0x03 ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KBPressed:
+kB_pressed:
 	cpi	r24,0x0B ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KFPressed:
+kF_pressed:
 	cpi	r24,0x0F ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KEPressed:
+kE_pressed:
 	cpi	r24,0x0E ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KDPressed:
+kD_pressed:
 	cpi	r24,0x0D ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KCPressed:
+kC_pressed:
 	cpi	r24,0x0C ;Compare with immediate
-	breq Correct
-	rjmp NotCorrect
+	breq correct
+	rjmp not_correct
 
-KOtherPressed:
-	rjmp NotCorrect
-
-nokeyspressed:
+no_keys_pressed:
 	in r4,pinb					;Put value of PINB in R0 (entire byte)
 	bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
 	;The switch is high if the T flag is cleared
-	brts NotCorrect				;Branch of the T flag is cleared
-	rjmp finishCheckButtons
+	brts not_correct				;Branch of the T flag is cleared
+	rjmp finish_check_buttons
 
-Correct:
+correct:
 	; Jump here when correct button is pressed
 
 	cbi portc,3
@@ -354,23 +352,23 @@ Correct:
 	adc zh, r1
 	lpm r24, z
 	cp r6,r25 ; check to see if nth correct button == total correct length	
-	breq Win ;Reset if combination finished
+	breq win ;reset if combination finished
 	inc r6
 
 	/*cbi portc,2*/
 
-	rjmp finishCheckButtons
+	rjmp finish_check_buttons
 
-NotCorrect:
-	ldi r25,0x01 ;Reset combination to length = 1
+not_correct:
+	ldi r25,0x01 ;reset combination to length = 1
 	sbi portc,3 ;Turn off LED 2
-	rjmp Reset
+	rjmp reset
 
-Win:
+win:
 	cbi portc,3
 	inc r25 ;Make the combination one letter longer
 
-Reset:
+reset:
 	;When wrong combination 
 	com showDisplay ; invert r3 -> make display visible
 	ldi zh, high(2*sequence)
@@ -381,21 +379,27 @@ Reset:
 	mov r6,r25
 	pop r25
 	
-finishCheckButtons:
-	ret ;from rcall CheckButtons
+finish_check_buttons:
+	ret ;from rcall check_buttons
 
-TimerOverflowInterrupt:
+timer_overflow_interrupt:
 	push r16
 	
 
-	;====1HZ: 49911, prescaler 1024====
+/*	;====1HZ: 49911, prescaler 1024====
 	ldi r16,0b11110111 ; low byte
 	sts TCNT1L,r16
 	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
 	sts TCNT1H,r16	
-;	rjmp OFContinue
+;	rjmp OFContinue*/
 
-OFContinue:
+	;===1.666Hz: 56161, prescaler 1024====
+	ldi r17,0b01100001 ; low byte
+	sts TCNT1L,r17
+	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
+	sts TCNT1H,r16
+
+
 	pop r16
 
 	clr showDisplay
@@ -405,7 +409,7 @@ OFContinue:
 	sbi portc,3 ;Turn off LED 2
 	
 	sbis portc,2 ; only check buttons on rising edge
-	rcall CheckButtons
+	rcall check_buttons
 
 	rcall load_buffer
 reti
@@ -425,12 +429,12 @@ loop_load_buffer2:
 	subi r19, 0x10
 	neg r19
 	sub r19, r25
-	brlt noPad2
+	brlt no_pad2
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
 	st y, r21
 	rjmp skipp2
-noPad2:
+no_pad2:
 	st y, r17
 skipp2:
 
