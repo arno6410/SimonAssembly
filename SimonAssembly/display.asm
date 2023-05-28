@@ -8,6 +8,8 @@
 ; origin
 .org 0x000
 rjmp init
+.org 0x0020
+rjmp Timer1OverflowInterrupt
 
 .include "m328pdef.inc"		;Load addresses of IO registers
 ;.include "test.asm"
@@ -27,14 +29,76 @@ init:
 	sbi ddrb, 3
 	sbi ddrb, 4
 	sbi ddrb, 5
-	clr r1 ; should always remain cleared
 	
-main:
-	ldi r18, 0x05 ; r18 is the 'level' counter
+	;Configure output pin PC2 (LED1)
+	sbi ddrc,2					;Pin PC2 is an ouput, set to 1
+	sbi portc,2					;Output Vcc => LED2 is turned off!
+
+	;Configure output pin PC3 (LED2)
+	sbi ddrc,3					;Pin PC3 is an ouput, set to 1
+	sbi portc,3					;Output Vcc => LED1 is turned off!
+
+	;Configure input pin PB0 (switch)
+	cbi ddrb,0					;Pin PB0 is an input, CBI (clear bit i/o) sets DDRB bit 2 to 0	
+	sbi portb,0					;Enables the pull-up resistor (to avoid floating)
+
+	;Configure input pins PD (keyboard)
+	ldi r16, 0b00001111			;Do it this way, the excel says that you should use in/out, use ldi first to put the address in a register
+	out ddrd, r16				;Pins PD 3-0 are input set to 0, 7-4 are output set to 1
+	ldi r16, 0b11110000			;Enable pull up resistors for 7 downto 4, these are the rows and will be the input pins
+	out portd, r16				;The columns will be the output pins
+
+	;==========TIMER 1: 16 bit==========
+
+	ldi r20, 0b00000000 ; CTC mode, int clk; not necessary?
+	sts tccr1a, r20     
+	ldi r20, 0b00000101 ; prescaler /1024
+	sts tccr1b, r20
+
+	/*	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
+	sts TCNT1L,r16
+	ldi r16,0X00 ;1011 1101 1100 is 3036 in decimal
+	sts TCNT1H,r16*/
+
+	ldi r17,0b11011100 ;To ensure 1Hz with prescaler 256
+	sts TCNT1L,r17
+	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
+	sts TCNT1H,r16
+
+	ldi r16, 0b00000100
+	sts timsk1, r16 ;Set toie0 bit to 1, to enable timer/counter0 overflow
+	sei ;Turn on timer (always on?)
+	;====================
+
+	;Put correct combination into memory
+	ldi zh, high(COMB_ADDRESS)
+	ldi zl, low(COMB_ADDRESS)
+	ldi r16, 0x01
+	st Z+, r16 ;Post increment!
+	ldi r16, 0x02
+	st Z+, r16
+	ldi r16, 0x03
+	st Z+, r16
+	ldi r16, 0x04
+	st Z+, r16
+	ldi r16, 0x05
+	st Z+, r16
+	ldi r16, 0x06
+	st Z+, r16
+	;...
+	;First correct one put into r24
+	ldi yh, high(COMB_ADDRESS)
+	ldi yl, low(COMB_ADDRESS)
+	ld	r24,Y+
+	;Put combination size in r25
+	ldi r25,0x01
+	mov r26,r25 ;r26 will be used to keep track of the combination
+	
+	mov r18, r26
 loop_seq:
 	
-	ldi xl, low(0x0100)
-	ldi xh, high(0x0100)
+	ldi yl, low(0x0100)
+	ldi yh, high(0x0100)
 	ldi zl, low(2*sequence)
 	ldi zh, high(2*sequence)
 	
@@ -49,28 +113,26 @@ loop_load_buffer:
 	brlt noPad
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
-	st x, r21
+	st y, r21
 	rjmp skipp
 noPad:
-	st x, r17
+	st y, r17
 skipp:
 
-	adiw x, 1
+	adiw y, 1
 	dec r16
 	brne loop_load_buffer
 	
+	
+main:
+	ldi r18, 0x01 ; r18 is the 'level' counter
+
+	
 loop_show:
-push r18
 	call show_buffer
 	
-	pop r18
 	; add here the condition of when to go to the next level
-	rjmp loop_seq
-
-next_level:
-	inc r18
-	cpi r18, 0x10
-	brne loop_seq
+	rjmp loop_show
 	
 	rjmp main
 	
@@ -94,11 +156,16 @@ empty: .db 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0
 
 sequence: .db 0x02, 0x0A, 0x0C, 0x04, 0x00, 0x01, 0x07, 0x0B, 0x03, 0x04, 0x0A, 0x0F, 0x05, 0x0E, 0x01, 0x06
 
-show_buffer:
+show_buffer: ; uses r1, r2, r16, 17, 18, 21
+	push r16
+	push r17
+	push r18
+	push r21
+	
 	ldi r17, 0b00000001
 	
 	ldi r16, 7
-	send8Row:
+loop_row:
 	ldi yl, low(0x0110) ; end of charbuffer (0x0100 + 16)
 	ldi yh, high(0x0110)
 	
@@ -107,6 +174,7 @@ loop_block:
 	ldi zh, high(2*char0)
 	ldi zl, low(2*char0)
 	
+	clr r1
 	add zl, r16
 	adc zh, r1
 	
@@ -148,7 +216,274 @@ loop_delay:
 	cbi portb,4
 	
 	dec r16
-	tst r17
-	brne send8row
+;	tst r17
+	brne loop_row
+	
+	pop r21
+	pop r18
+	pop r17
+	pop r16
 	
 ret
+
+
+
+
+
+
+CheckButtons:
+
+	ldi r20, 0b11110111			;low,high,high,high to see the first row
+	ldi r21, 0b11111011			;high,low,high,high to see the second row
+	ldi r22, 0b11111101			;high,high,low,high to see the third row
+	ldi r23, 0b11111110			;high,high,high,low to see the fourth row
+	
+	out portd, r20
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp K7Pressed
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp K4Pressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp K1Pressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp KAPressed
+
+	out portd, r21
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp K8Pressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp K5Pressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp K2Pressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp K0Pressed	
+	
+	out portd, r22
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp K9Pressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp K6Pressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp K3Pressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp KBPressed		
+	
+	out portd, r23
+	nop
+	nop
+
+	sbis pind,7					;Skip next instruction if the most significant bit of pin D is set.
+	rjmp KFPressed		
+	sbis pind,6					;Skip next if bit 6 of pin D is 1
+	rjmp KEPressed
+	sbis pind,5					;Skip next if bit 5 of pin D is 1
+	rjmp KDPressed
+	sbis pind,4					;Skip next if bit 4 of pin D is 1
+	rjmp KCPressed			
+
+	rjmp nokeyspressed
+
+K7Pressed:
+	cpi	r24,0x07 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K4Pressed:
+	cpi	r24,0x04 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K1Pressed:
+	cpi	r24,0x01 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+KAPressed:
+	cpi	r24,0x0A ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K8Pressed:
+	cpi	r24,0x08 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K5Pressed:
+	cpi	r24,0x05 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K2Pressed:
+	cpi	r24,0x02 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+K0Pressed:
+	cpi	r24,0x00 ;Compare with immediate
+	breq Jump2C
+	rjmp NotCorrect
+
+;==========To avoid Relative Branch Out of Reach error==========
+Jump2C:
+	jmp Correct
+
+K9Pressed:
+	cpi	r24,0x09 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+K6Pressed:
+	cpi	r24,0x06 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+K3Pressed:
+	cpi	r24,0x03 ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KBPressed:
+	cpi	r24,0x0B ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KFPressed:
+	cpi	r24,0x0F ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KEPressed:
+	cpi	r24,0x0E ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KDPressed:
+	cpi	r24,0x0D ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KCPressed:
+	cpi	r24,0x0C ;Compare with immediate
+	breq Correct
+	rjmp NotCorrect
+
+KOtherPressed:
+	rjmp NotCorrect
+
+nokeyspressed:
+	rjmp finishCheckButtons
+
+Correct:
+	; Jump here when correct button is pressed
+
+	; Load next correct combination from memory
+	ld r24,Y+
+	dec r26	
+	breq Win ;Reset if combination finished
+
+	/*cbi portc,2*/
+
+	rjmp finishCheckButtons
+
+NotCorrect:
+	ldi r25,0x01 ;Reset combination to length = 1
+	sbi portc,3 ;Turn off LED 2
+	rjmp Reset
+
+Win:
+	cbi portc,3
+	inc r25 ;Make the combination one letter longer
+
+Reset:
+	;When wrong combination 
+	ldi yh, high(COMB_ADDRESS)
+	ldi yl, low(COMB_ADDRESS)
+	ld	r24,Y+
+	mov r26,r25
+	
+finishCheckButtons:
+ret ;from rcall CheckButtons
+
+
+
+
+Timer1OverflowInterrupt:
+	push r18
+	push r16
+	push r17
+	
+
+	IN R0,PINB					;Put value of PINB in R0 (entire byte)
+	BST R0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+	;The switch is high if the T flag is cleared
+	BRTC EasyDifficulty				;Branch of the T flag is cleared
+
+HardDifficulty:
+	;===1.666Hz: 56161, prescaler 1024====
+	ldi r17,0b01100001 ; low byte
+	sts TCNT1L,r17
+	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
+	sts TCNT1H,r16
+	rjmp OFContinue
+
+EasyDifficulty:
+	;====1HZ: 49911, prescaler 1024====
+	ldi r17,0b11110111 ; low byte
+	sts TCNT1L,r17
+	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
+	sts TCNT1H,r16	
+	rjmp OFContinue
+
+OFContinue:
+	pop r17
+	pop r16
+
+	sbi pinc,2 ;Flips the value
+	;sbi portc,3 ;Turn off LED 2
+	
+	sbis portc,2 ; only check buttons on rising edge
+	rcall CheckButtons
+
+	pop r18
+	mov r18, r26
+loop_seq2:
+	
+	ldi yl, low(0x0100)
+	ldi yh, high(0x0100)
+	ldi zl, low(2*sequence)
+	ldi zh, high(2*sequence)
+	
+	ldi r16, 0x10
+loop_load_buffer2:
+	lpm r17, z+
+	
+	mov r19, r16
+	subi r19, 0x10
+	neg r19
+	sub r19, r18
+	brlt noPad2
+	
+	ldi r21, 0x10 ; char 0x10 is an empty segment
+	st y, r21
+	rjmp skipp2
+noPad2:
+	st y, r17
+skipp2:
+
+	adiw y, 1
+	dec r16
+	brne loop_load_buffer2
+
+
+reti
+	
+COMB_ADDRESS: .dw 0x0500 ;?

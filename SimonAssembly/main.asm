@@ -306,24 +306,8 @@ Reset:
 	ld	r24,Y+
 	mov r26,r25
 
-	ret ;from rcall CheckButtons
+ret ;from rcall CheckButtons
 
-
-.equ msg_length = 6
-row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
-
-msg: .dw charR, charO, charG, charI, charE, charR
-charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
-charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
-charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
-charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
 
 
 
@@ -333,40 +317,21 @@ select_row:
 	push r16
 	cbi portb, 3
 
-	shift_reg 7
-	shift_reg 6
-	shift_reg 5
-	shift_reg 4
-	shift_reg 3
-	shift_reg 2
-	shift_reg 1
-	shift_reg 0
 	
 	; latch to show row on display
 	sbi portb, 4
 	ldi r16, 255
-delayloop1:
+delaylop1:
 	subi r16, 1
 	breq enddelayloop1
 	nop
-	rjmp delayloop1
+	rjmp delaylop1
 enddelayloop1:
 	cbi portb, 4
 	
 	pop r16
 ret
 	
-; show a row segment (5 pixels wide)
-show_row_segment5:
-	cbi portb, 3
-	
-	shift_reg 0 ; pixel 0
-	shift_reg 1
-	shift_reg 2
-	shift_reg 3
-	shift_reg 4 ; pixel 4	
-ret
-
 
 
 Timer1OverflowInterrupt:
