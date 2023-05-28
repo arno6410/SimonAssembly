@@ -78,44 +78,12 @@ init:
 	mov r6,r25 ;r6 will be used to keep track of the combination
 	mov r18, r6
 	/*mov r9,r25	;r9 stores the current winning combination length*/
-loop_seq:
-	
-	ldi yl, low(0x0100)
-	ldi yh, high(0x0100)
-	ldi zl, low(2*sequence)
-	ldi zh, high(2*sequence)
-	
-	ldi r16, 0x10
-loop_load_buffer:
-	lpm r17, z+
-	
-	mov r19, r16
-	subi r19, 0x10
-	neg r19
-	sub r19, r25
-	brlt noPad
-	
-	ldi r21, 0x10 ; char 0x10 is an empty segment
-	st y, r21
-	rjmp skipp
-noPad:
-	st y, r17
-skipp:
-
-	adiw y, 1
-	dec r16
-	brne loop_load_buffer
+	rcall load_buffer
 	
 	
 main:
-
-	
-loop_show:
 	sbrc showDisplay, 1
-	call show_buffer
-	
-	; add here the condition of when to go to the next level
-	rjmp loop_show
+	rcall show_buffer
 	
 	rjmp main
 	
@@ -420,21 +388,6 @@ TimerOverflowInterrupt:
 	push r16
 	
 
-	;in r4,pinb					;Put value of PINB in R0 (entire byte)
-	;bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
-	;;The switch is high if the T flag is cleared
-	;brtc EasyDifficulty				;Branch of the T flag is cleared
-	rjmp EasyDifficulty
-
-HardDifficulty:
-	;===1.666Hz: 56161, prescaler 1024====
-	ldi r16,0b01100001 ; low byte
-	sts TCNT1L,r16
-	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
-	sts TCNT1H,r16
-	rjmp OFContinue
-
-EasyDifficulty:
 	;====1HZ: 49911, prescaler 1024====
 	ldi r16,0b11110111 ; low byte
 	sts TCNT1L,r16
@@ -454,8 +407,10 @@ OFContinue:
 	sbis portc,2 ; only check buttons on rising edge
 	rcall CheckButtons
 
+	rcall load_buffer
+reti
 	
-loop_seq2:
+load_buffer:
 	
 	ldi yl, low(0x0100)
 	ldi yh, high(0x0100)
@@ -483,8 +438,4 @@ skipp2:
 	dec r16
 	brne loop_load_buffer2
 	
-	
-	
-reti
-	
-;COMB_ADDRESS: .dw 0x0500 ;?
+	ret
