@@ -9,7 +9,7 @@
 .org 0x000
 rjmp init
 .org 0x0020
-rjmp Timer1OverflowInterrupt
+rjmp TimerOverflowInterrupt
 
 .include "m328pdef.inc"		;Load addresses of IO registers
 ;.include "test.asm"
@@ -69,22 +69,6 @@ init:
 	sei ;Turn on timer (always on?)
 	;====================
 
-	;Put correct combination into memory
-; 	ldi xh, high(COMB_ADDRESS)
-; 	ldi xl, low(COMB_ADDRESS)
-; 	ldi r16, 0x01
-; 	st x+, r16 ;Post increment!
-; 	ldi r16, 0x02
-; 	st x+, r16
-; 	ldi r16, 0x03
-; 	st x+, r16
-; 	ldi r16, 0x04
-; 	st x+, r16
-; 	ldi r16, 0x05
-; 	st x+, r16
-; 	ldi r16, 0x06
-; 	st x+, r16
-; 	;...
 	;First correct one put into r24
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
@@ -153,7 +137,10 @@ charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110, 0
 charF: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b10000, 0
 empty: .db 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0
 
-sequence: .db 0x02, 0x0A, 0x0C, 0x04, 0x00, 0x01, 0x07, 0x0B, 0x03, 0x04, 0x0A, 0x0F, 0x05, 0x0E, 0x01, 0x06
+;uncomment to select a combination
+;sequence: .db 0x02, 0x0A, 0x0C, 0x04, 0x00, 0x01, 0x07, 0x0B, 0x03, 0x04, 0x0A, 0x0F, 0x05, 0x0E, 0x01, 0x06
+;sequence: .db 0x01, 0x09, 0x0A, 0x0C, 0x03, 0x05, 0x0E, 0x01, 0x00, 0x09, 0x0C, 0x0D, 0x04, 0x0F, 0x00, 0x01
+sequence: .db 0x0D, 0x0A, 0x0B, 0x05, 0x02, 0x0D, 0x09, 0x0D, 0x04, 0x0D, 0x0D, 0x0C, 0x0B, 0x0E, 0x09, 0x06
 
 show_buffer: ; uses r1, r2, r16, 17, 18, 21
 	push r16
@@ -381,6 +368,10 @@ KOtherPressed:
 	rjmp NotCorrect
 
 nokeyspressed:
+	in r4,pinb					;Put value of PINB in R0 (entire byte)
+	bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+	;The switch is high if the T flag is cleared
+	brts NotCorrect				;Branch of the T flag is cleared
 	rjmp finishCheckButtons
 
 Correct:
@@ -425,17 +416,15 @@ Reset:
 finishCheckButtons:
 	ret ;from rcall CheckButtons
 
-
-
-
-Timer1OverflowInterrupt:
+TimerOverflowInterrupt:
 	push r16
 	
 
-	in r4,pinb					;Put value of PINB in R0 (entire byte)
-	bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
-	;The switch is high if the T flag is cleared
-	brtc EasyDifficulty				;Branch of the T flag is cleared
+	;in r4,pinb					;Put value of PINB in R0 (entire byte)
+	;bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+	;;The switch is high if the T flag is cleared
+	;brtc EasyDifficulty				;Branch of the T flag is cleared
+	rjmp EasyDifficulty
 
 HardDifficulty:
 	;===1.666Hz: 56161, prescaler 1024====
