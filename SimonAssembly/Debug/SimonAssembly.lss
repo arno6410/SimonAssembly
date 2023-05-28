@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sat May 27 21:13:22 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sun May 28 13:42:01 2023
 
 [builtin](2): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328Pdef.inc'
 C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(8): Including file 'C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\m328pdef.inc'
@@ -1040,7 +1040,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\Sim
                                  .org 0x000
 000000 c020                      rjmp init
                                  .org 0x0020
-000020 c179                      rjmp Timer1OverflowInterrupt
+000020 c0bc                      rjmp Timer1OverflowInterrupt
                                  
                                  .macro shift_reg
                                  	sbrc r16, @0 ; bit # of 16 to shift into register
@@ -1098,23 +1098,23 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\Sim
                                  
                                  	;Put correct combination into memory
 00003e e0f1                      	ldi zh, high(COMB_ADDRESS)
-00003f ebed                      	ldi zl, low(COMB_ADDRESS)
-000040 e0c1                      	ldi r28, 0x01
-000041 93c1                      	st Z+, r28 ;Post increment!
-000042 e0c2                      	ldi r28, 0x02
-000043 93c1                      	st Z+, r28
-000044 e0c3                      	ldi r28, 0x03
-000045 93c1                      	st Z+, r28
-000046 e0c4                      	ldi r28, 0x04
-000047 93c1                      	st Z+, r28
-000048 e0c5                      	ldi r28, 0x05
-000049 93c1                      	st Z+, r28
-00004a e0c6                      	ldi r28, 0x06
-00004b 93c1                      	st Z+, r28
+00003f e0e0                      	ldi zl, low(COMB_ADDRESS)
+000040 e001                      	ldi r16, 0x01
+000041 9301                      	st Z+, r16 ;Post increment!
+000042 e002                      	ldi r16, 0x02
+000043 9301                      	st Z+, r16
+000044 e003                      	ldi r16, 0x03
+000045 9301                      	st Z+, r16
+000046 e004                      	ldi r16, 0x04
+000047 9301                      	st Z+, r16
+000048 e005                      	ldi r16, 0x05
+000049 9301                      	st Z+, r16
+00004a e006                      	ldi r16, 0x06
+00004b 9301                      	st Z+, r16
                                  	;...
                                  	;First correct one put into r24
 00004c e0d1                      	ldi yh, high(COMB_ADDRESS)
-00004d ebcd                      	ldi yl, low(COMB_ADDRESS)
+00004d e0c0                      	ldi yl, low(COMB_ADDRESS)
 00004e 9189                      	ld	r24,Y+
                                  	;Put combination size in r25
 00004f e091                      	ldi r25,0x01
@@ -1304,7 +1304,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\Sim
 0000c2 c005                      	rjmp NotCorrect
                                  
                                  nokeyspressed:
-                                 
+                                 	
 0000c3 9508                      	ret ;from rcall CheckButtons
                                  
                                  Correct:
@@ -1313,7 +1313,7 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\Sim
                                  	; Load next correct combination from memory
 0000c4 9189                      	ld r24,Y+
 0000c5 95aa                      	dec r26	
-0000c6 f019                      	breq Win ;Reset if combination finished
+0000c6 f021                      	breq Win ;Reset if combination finished
                                  
                                  	/*cbi portc,2*/
                                  
@@ -1321,315 +1321,101 @@ C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\Sim
                                  
                                  NotCorrect:
 0000c8 e091                      	ldi r25,0x01 ;Reset combination to length = 1
-0000c9 c002                      	rjmp Reset
+0000c9 9a43                      	sbi portc,3 ;Turn off LED 2
+0000ca c002                      	rjmp Reset
                                  
                                  Win:
-0000ca 9843                      	cbi portc,3
-0000cb 9593                      	inc r25 ;Make the combination one letter longer
+0000cb 9843                      	cbi portc,3
+0000cc 9593                      	inc r25 ;Make the combination one letter longer
                                  
                                  Reset:
                                  	;When wrong combination 
-0000cc e0d1                      	ldi yh, high(COMB_ADDRESS)
-0000cd ebcd                      	ldi yl, low(COMB_ADDRESS)
-0000ce 9189                      	ld	r24,Y+
-0000cf 2fa9                      	mov r26,r25
+0000cd e0d1                      	ldi yh, high(COMB_ADDRESS)
+0000ce e0c0                      	ldi yl, low(COMB_ADDRESS)
+0000cf 9189                      	ld	r24,Y+
+0000d0 2fa9                      	mov r26,r25
                                  
-0000d0 9508                      	ret ;from rcall CheckButtons
-                                 
-                                 
-                                 .equ msg_length = 6
-0000d1 0000
-0000d2 0000
-0000d3 0000                      row1:	.db		0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000
-0000d4 1e1c
-0000d5 0c0e
-0000d6 1c0c                      row2:	.db		0b11100, 0b11110, 0b01110, 0b01100, 0b01100, 0b11100
-0000d7 1012
-0000d8 1204
-0000d9 1212                      row3:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-0000da 1c12
-0000db 1004
-0000dc 1212                      row4:	.db		0b10010, 0b11100, 0b00100, 0b10000, 0b10010, 0b10010
-0000dd 101c
-0000de 1604
-0000df 1c12                      row5:	.db		0b11100, 0b10000, 0b00100, 0b10110, 0b10010, 0b11100
-0000e0 1012
-0000e1 1204
-0000e2 1212                      row6:	.db		0b10010, 0b10000, 0b00100, 0b10010, 0b10010, 0b10010
-0000e3 1e12
-0000e4 0c0e
-0000e5 120c                      row7:	.db		0b10010, 0b11110, 0b01110, 0b01100, 0b01100, 0b10010
-                                 
-0000e6 00ec
-0000e7 00f0
-0000e8 00f4
-0000e9 00f8
-0000ea 00fc
-0000eb 00ec                      msg: .dw charR, charO, charG, charI, charE, charR
-0000ec 1c00
-0000ed 1212
-0000ee 121c
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(321): warning: .cseg .db misalignment - padding zero byte
-0000ef 0012                      charR: .db 0b00000, 0b11100, 0b10010, 0b10010, 0b11100, 0b10010, 0b10010
-0000f0 0c00
-0000f1 1212
-0000f2 1212
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(322): warning: .cseg .db misalignment - padding zero byte
-0000f3 000c                      charO: .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100
-0000f4 0c00
-0000f5 1012
-0000f6 1216
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(323): warning: .cseg .db misalignment - padding zero byte
-0000f7 000c                      charG: .db 0b00000, 0b01100, 0b10010, 0b10000, 0b10110, 0b10010, 0b01100
-0000f8 0e00
-0000f9 0404
-0000fa 0404
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(324): warning: .cseg .db misalignment - padding zero byte
-0000fb 000e                      charI: .db 0b00000, 0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110
-0000fc 1e00
-0000fd 1c10
-0000fe 1010
-C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm(325): warning: .cseg .db misalignment - padding zero byte
-0000ff 001e                      charE: .db 0b00000, 0b11110, 0b10000, 0b11100, 0b10000, 0b10000, 0b11110
+0000d1 9508                      ret ;from rcall CheckButtons
                                  
                                  
                                  
-                                 show_msg:
-000100 e027                      	ldi r18, 7 ; # rows 
-000101 e001                      	ldi r16, 0b0000001 ; initial row selection (row 1)
-                                 loop_show_next_row:
-000102 930f                      	push r16 ; save row selection
-                                 	
-                                 	; padding
-000103 e000                      	ldi r16, 0b00000
-000104 e01a                      	ldi r17, 16-msg_length ; # segments to pad
-                                 loop_padding:
-000105 940e 0155                 	call show_row_segment5
-000107 951a                      	dec r17
-000108 f7e1                      	brne loop_padding
-                                 	
-000109 e0d1                      	ldi yh, high(2*msg)
-00010a eccc                      	ldi yl, low(2*msg)
-                                 	
-00010b e016                      	ldi r17, msg_length
-                                 loop_row:
-                                 	
-00010c 91f9                      	ld zh, y+
-00010d 91e9                      	ld zl, y+
-                                 	
-00010e 9731                      	sbiw z, 1
-00010f 932f                      	push r18
-000110 5028                      	subi r18, 8
-000111 9521                      	neg r18
-                                 loop_z:
-000112 9631                      	adiw z, 1
-000113 952a                      	dec r18
-000114 f7e9                      	brne loop_z
-000115 912f                      	pop r18
-                                 	
-000116 9104                      	lpm	r16, z ; load segment from program memory
-000117 940e 0155                 	call show_row_segment5
-000119 951a                      	dec r17
-00011a f789                      	brne loop_row
-                                 	
-00011b 910f                      	pop r16
-00011c 940e 0122                 	call select_row
-00011e 0f00                      	lsl r16 ; select next row
-                                 	
-00011f 952a                      	dec r18
-000120 f709                      	brne loop_show_next_row
-000121 9508                      ret
                                  
                                  
                                  
                                  select_row:
-000122 930f                      	push r16
-000123 982b                      	cbi portb, 3
+0000d2 930f                      	push r16
+0000d3 982b                      	cbi portb, 3
                                  
-000124 fd07
-000125 9a2b
-000126 982d
-000127 9a2d
-000128 982b                      	shift_reg 7
-000129 fd06
-00012a 9a2b
-00012b 982d
-00012c 9a2d
-00012d 982b                      	shift_reg 6
-00012e fd05
-00012f 9a2b
-000130 982d
-000131 9a2d
-000132 982b                      	shift_reg 5
-000133 fd04
-000134 9a2b
-000135 982d
-000136 9a2d
-000137 982b                      	shift_reg 4
-000138 fd03
-000139 9a2b
-00013a 982d
-00013b 9a2d
-00013c 982b                      	shift_reg 3
-00013d fd02
-00013e 9a2b
-00013f 982d
-000140 9a2d
-000141 982b                      	shift_reg 2
-000142 fd01
-000143 9a2b
-000144 982d
-000145 9a2d
-000146 982b                      	shift_reg 1
-000147 fd00
-000148 9a2b
-000149 982d
-00014a 9a2d
-00014b 982b                      	shift_reg 0
                                  	
                                  	; latch to show row on display
-00014c 9a2c                      	sbi portb, 4
-00014d ef0f                      	ldi r16, 255
-                                 delayloop1:
-00014e 5001                      	subi r16, 1
-00014f f011                      	breq enddelayloop1
-000150 0000                      	nop
-000151 cffc                      	rjmp delayloop1
+0000d4 9a2c                      	sbi portb, 4
+0000d5 ef0f                      	ldi r16, 255
+                                 delaylop1:
+0000d6 5001                      	subi r16, 1
+0000d7 f011                      	breq enddelayloop1
+0000d8 0000                      	nop
+0000d9 cffc                      	rjmp delaylop1
                                  enddelayloop1:
-000152 982c                      	cbi portb, 4
+0000da 982c                      	cbi portb, 4
                                  	
-000153 910f                      	pop r16
-000154 9508                      ret
+0000db 910f                      	pop r16
+0000dc 9508                      ret
                                  	
-                                 ; show a row segment (5 pixels wide)
-                                 show_row_segment5:
-000155 982b                      	cbi portb, 3
-                                 	
-000156 fd00
-000157 9a2b
-000158 982d
-000159 9a2d
-00015a 982b                      	shift_reg 0 ; pixel 0
-00015b fd01
-00015c 9a2b
-00015d 982d
-00015e 9a2d
-00015f 982b                      	shift_reg 1
-000160 fd02
-000161 9a2b
-000162 982d
-000163 9a2d
-000164 982b                      	shift_reg 2
-000165 fd03
-000166 9a2b
-000167 982d
-000168 9a2d
-000169 982b                      	shift_reg 3
-00016a fd04
-00016b 9a2b
-00016c 982d
-00016d 9a2d
-00016e 982b                      	shift_reg 4 ; pixel 4	
-00016f 9508                      ret
                                  
-                                 ; show a row segment (8 pixels wide)
-                                 show_row_segment8:
-000170 982b                      	cbi portb, 3
-                                 	
-000171 fd00
-000172 9a2b
-000173 982d
-000174 9a2d
-000175 982b                      	shift_reg 0 ; pixel 0
-000176 fd01
-000177 9a2b
-000178 982d
-000179 9a2d
-00017a 982b                      	shift_reg 1
-00017b fd02
-00017c 9a2b
-00017d 982d
-00017e 9a2d
-00017f 982b                      	shift_reg 2
-000180 fd03
-000181 9a2b
-000182 982d
-000183 9a2d
-000184 982b                      	shift_reg 3
-000185 fd04
-000186 9a2b
-000187 982d
-000188 9a2d
-000189 982b                      	shift_reg 4
-00018a fd05
-00018b 9a2b
-00018c 982d
-00018d 9a2d
-00018e 982b                      	shift_reg 5
-00018f fd06
-000190 9a2b
-000191 982d
-000192 9a2d
-000193 982b                      	shift_reg 6
-000194 fd07
-000195 9a2b
-000196 982d
-000197 9a2d
-000198 982b                      	shift_reg 7	
-000199 9508                      ret
                                  
                                  Timer1OverflowInterrupt:
-00019a 930f                      	push r16
-00019b 931f                      	push r17
+0000dd 930f                      	push r16
+0000de 931f                      	push r17
                                  
-00019c b003                      	IN R0,PINB					;Put value of PINB in R0 (entire byte)
-00019d fa00                      	BST R0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+0000df b003                      	IN R0,PINB					;Put value of PINB in R0 (entire byte)
+0000e0 fa00                      	BST R0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
                                  	;The switch is high if the T flag is cleared
-00019e f43e                      	BRTC EasyDifficulty				;Branch of the T flag is cleared
+0000e1 f43e                      	BRTC EasyDifficulty				;Branch of the T flag is cleared
                                  
                                  HardDifficulty:
                                  	;===1.666Hz: 56161, prescaler 1024====
-00019f e611                      	ldi r17,0b01100001 ; low byte
-0001a0 9310 0084                 	sts TCNT1L,r17
-0001a2 ed0b                      	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
-0001a3 9300 0085                 	sts TCNT1H,r16
-0001a5 c007                      	rjmp OFContinue
+0000e2 e611                      	ldi r17,0b01100001 ; low byte
+0000e3 9310 0084                 	sts TCNT1L,r17
+0000e5 ed0b                      	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
+0000e6 9300 0085                 	sts TCNT1H,r16
+0000e8 c007                      	rjmp OFContinue
                                  
                                  EasyDifficulty:
                                  	;====1HZ: 49911, prescaler 1024====
-0001a6 ef17                      	ldi r17,0b11110111 ; low byte
-0001a7 9310 0084                 	sts TCNT1L,r17
-0001a9 ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
-0001aa 9300 0085                 	sts TCNT1H,r16	
-0001ac c000                      	rjmp OFContinue
+0000e9 ef17                      	ldi r17,0b11110111 ; low byte
+0000ea 9310 0084                 	sts TCNT1L,r17
+0000ec ec02                      	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
+0000ed 9300 0085                 	sts TCNT1H,r16	
+0000ef c000                      	rjmp OFContinue
                                  
                                  OFContinue:
-0001ad 911f                      	pop r17
-0001ae 910f                      	pop r16
+0000f0 911f                      	pop r17
+0000f1 910f                      	pop r16
                                  
-0001af 9a32                      	sbi pinc,2 ;Flips the value
-0001b0 9a43                      	sbi portc,3 ;Turn of LED 2
+0000f2 9a32                      	sbi pinc,2 ;Flips the value
+                                 	;sbi portc,3 ;Turn off LED 2
+                                 	
+0000f3 9b42                      	sbis portc,2 ; only check buttons on rising edge
+0000f4 df5d                      	rcall CheckButtons
                                  
-0001b1 dea0                      	rcall CheckButtons
-                                 
-0001b2 9518                      	reti
+0000f5 9518                      	reti
                                  
                                  
                                  ;Definition of memory address of start and end of charbuffer
-0001b3 0100                      CHARBUFFER_START: .dw	0x0100
-0001b4 010f                      CHARBUFFER_END:  .dw	0x010F
+0000f6 0100                      CHARBUFFER_START: .dw	0x0100
+0000f7 010f                      CHARBUFFER_END:  .dw	0x010F
                                  
                                  CharTable:
-0001b5 0c00
-0001b6 1212
-0001b7 1212
-0001b8 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
-0001b9 0400
-0001ba 140c
-0001bb 0404
-0001bc 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
+0000f8 0c00
+0000f9 1212
+0000fa 1212
+0000fb 000c                      .db 0b00000, 0b01100, 0b10010, 0b10010, 0b10010, 0b10010, 0b01100, 0b00000 ;0
+0000fc 0400
+0000fd 140c
+0000fe 0404
+0000ff 001f                      .db 0b00000, 0b00100, 0b01100, 0b10100, 0b00100, 0b00100, 0b11111, 0b00000 ;1
                                  
-0001bd 0500                      COMB_ADDRESS: .dw 0x0500 ;?
+000100 0500                      COMB_ADDRESS: .dw 0x0500 ;?
                                  
                                  
 
@@ -1649,40 +1435,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   5 z  :   9 r0 :   2 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   3 z  :   6 r0 :   2 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  49 r17:  16 r18:   7 r19:   0 r20:   6 
-r21:   2 r22:   2 r23:   2 r24:  19 r25:   5 r26:   3 r27:   0 r28:  15 
-r29:   3 r30:   2 r31:   2 
-Registers used: 17 out of 35 (48.6%)
+r13:   0 r14:   0 r15:   0 r16:  34 r17:  12 r18:   0 r19:   0 r20:   6 
+r21:   2 r22:   2 r23:   2 r24:  19 r25:   5 r26:   3 r27:   0 r28:   2 
+r29:   2 r30:   1 r31:   1 
+Registers used: 16 out of 35 (45.7%)
 
 "ATmega328P" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   1 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   1 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   1 call  :   3 cbi   :  48 cbr   :   0 
+brne  :   2 brpl  :   0 brsh  :   0 brtc  :   1 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   1 call  :   0 cbi   :   4 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :  16 cpse  :   0 dec   :   7 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :  16 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   1 jmp   :   1 
-ld    :   5 ldd   :   0 ldi   :  39 lds   :   0 lpm   :   2 lsl   :   1 
+ld    :   3 ldd   :   0 ldi   :  32 lds   :   0 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   2 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   1 nop   :  11 or    :   0 ori   :   0 out   :   6 pop   :   7 
-push  :   7 rcall :   1 ret   :   8 reti  :   1 rjmp  :  41 rol   :   0 
-ror   :   0 sbc   :   0 sbci  :   0 sbi   :  53 sbic  :   0 sbis  :  16 
-sbiw  :   1 sbr   :   0 sbrc  :  21 sbrs  :   0 sec   :   0 seh   :   0 
+neg   :   0 nop   :  11 or    :   0 ori   :   0 out   :   6 pop   :   5 
+push  :   5 rcall :   1 ret   :   5 reti  :   1 rjmp  :  41 rol   :   0 
+ror   :   0 sbc   :   0 sbci  :   0 sbi   :  11 sbic  :   0 sbis  :  17 
+sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   0 sts   :   9 
-sub   :   0 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 34 out of 113 (30.1%)
+sub   :   0 subi  :   1 swap  :   0 tst   :   0 wdr   :   0 
+Instructions used: 27 out of 113 (23.9%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00037c    714    116    830   32768   2.5%
+[.cseg] 0x000000 0x000202    430     22    452   32768   1.4%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
-Assembly complete, 0 errors, 5 warnings
+Assembly complete, 0 errors, 0 warnings

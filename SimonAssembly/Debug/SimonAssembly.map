@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sat May 27 21:13:22 2023
+AVRASM ver. 2.2.8  C:\Users\ArnoD\Documents\VUB\1MA\Sensors and Microsystem Electronics\Labs\µC\SimonAssembly\SimonAssembly\main.asm Sun May 28 13:42:01 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -694,8 +694,8 @@ EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
 CSEG init         00000021
-CSEG Timer1OverflowInterrupt 0000019a
-CSEG COMB_ADDRESS 000001bd
+CSEG Timer1OverflowInterrupt 000000dd
+CSEG COMB_ADDRESS 00000100
 CSEG main         00000051
 CSEG CheckButtons 00000052
 CSEG K7Pressed    00000083
@@ -722,35 +722,14 @@ CSEG DELAY        0000009d
 CSEG Delayloop1_  000000a0
 CSEG DelayLoop2   000000a2
 CSEG KOtherPressed 000000c2
-CSEG Win          000000ca
-CSEG Reset        000000cc
-EQU  msg_length   00000006
-CSEG row1         000000d1
-CSEG row2         000000d4
-CSEG row3         000000d7
-CSEG row4         000000da
-CSEG row5         000000dd
-CSEG row6         000000e0
-CSEG row7         000000e3
-CSEG msg          000000e6
-CSEG charR        000000ec
-CSEG charO        000000f0
-CSEG charG        000000f4
-CSEG charI        000000f8
-CSEG charE        000000fc
-CSEG show_msg     00000100
-CSEG loop_show_next_row 00000102
-CSEG loop_padding 00000105
-CSEG show_row_segment5 00000155
-CSEG loop_row     0000010c
-CSEG loop_z       00000112
-CSEG select_row   00000122
-CSEG delayloop1   0000014e
-CSEG enddelayloop1 00000152
-CSEG show_row_segment8 00000170
-CSEG EasyDifficulty 000001a6
-CSEG HardDifficulty 0000019f
-CSEG OFContinue   000001ad
-CSEG CHARBUFFER_START 000001b3
-CSEG CHARBUFFER_END 000001b4
-CSEG CharTable    000001b5
+CSEG Win          000000cb
+CSEG Reset        000000cd
+CSEG select_row   000000d2
+CSEG delaylop1    000000d6
+CSEG enddelayloop1 000000da
+CSEG EasyDifficulty 000000e9
+CSEG HardDifficulty 000000e2
+CSEG OFContinue   000000f0
+CSEG CHARBUFFER_START 000000f6
+CSEG CHARBUFFER_END 000000f7
+CSEG CharTable    000000f8
