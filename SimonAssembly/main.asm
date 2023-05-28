@@ -71,36 +71,36 @@ init:
 	;====================
 
 	;Put correct combination into memory
-	ldi zh, high(COMB_ADDRESS)
-	ldi zl, low(COMB_ADDRESS)
-	ldi r16, 0x01
-	st Z+, r16 ;Post increment!
-	ldi r16, 0x02
-	st Z+, r16
-	ldi r16, 0x03
-	st Z+, r16
-	ldi r16, 0x04
-	st Z+, r16
-	ldi r16, 0x05
-	st Z+, r16
-	ldi r16, 0x06
-	st Z+, r16
-	;...
+; 	ldi xh, high(COMB_ADDRESS)
+; 	ldi xl, low(COMB_ADDRESS)
+; 	ldi r16, 0x01
+; 	st x+, r16 ;Post increment!
+; 	ldi r16, 0x02
+; 	st x+, r16
+; 	ldi r16, 0x03
+; 	st x+, r16
+; 	ldi r16, 0x04
+; 	st x+, r16
+; 	ldi r16, 0x05
+; 	st x+, r16
+; 	ldi r16, 0x06
+; 	st x+, r16
+; 	;...
 	;First correct one put into r24
-	ldi xh, high(2*sequence)
-	ldi xl, low(2*sequence)
-	ld	r24,X+
+	ldi zh, high(2*sequence)
+	ldi zl, low(2*sequence)
+	lpm	r24,z+
 	;Put combination size in r25
-	ldi r25,0x01
+	ldi r25,0x0
 	mov r6,r25 ;r6 will be used to keep track of the combination
-	
+	inc r6
 	mov r18, r6
 loop_seq:
 	
 	ldi yl, low(0x0100)
 	ldi yh, high(0x0100)
-	ldi zl, low(2*COMB_ADDRESS)
-	ldi zh, high(2*COMB_ADDRESS)
+	ldi zl, low(2*sequence)
+	ldi zh, high(2*sequence)
 	
 	ldi r16, 0x10
 loop_load_buffer:
@@ -109,7 +109,7 @@ loop_load_buffer:
 	mov r19, r16
 	subi r19, 0x10
 	neg r19
-	sub r19, r18
+	sub r19, r6
 	brlt noPad
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
@@ -125,7 +125,6 @@ skipp:
 	
 	
 main:
-	ldi r18, 0x01 ; r18 is the 'level' counter
 
 	
 loop_show:
@@ -216,14 +215,12 @@ loop_delay:
 	cbi portb,4
 	
 	dec r16
-;	tst r17
 	brne loop_row
 	
 	pop r21
 	pop r18
 	pop r17
 	pop r16
-	
 ret
 
 
@@ -386,8 +383,13 @@ Correct:
 	; Jump here when correct button is pressed
 
 	; Load next correct combination from memory
-	ld r24,X+
-	dec r6	
+	ldi zh, high(2*sequence)
+	ldi zl, low(2*sequence)
+	
+	add zl, r25
+	adc zh, r1
+	lpm r24, z
+	inc r6	
 	breq Win ;Reset if combination finished
 
 	/*cbi portc,2*/
@@ -405,9 +407,9 @@ Win:
 
 Reset:
 	;When wrong combination 
-	ldi xh, high(COMB_ADDRESS)
-	ldi xl, low(COMB_ADDRESS)
-	ld	r24,X+
+	ldi zh, high(2*sequence)
+	ldi zl, low(2*sequence)
+	lpm	r24,z+
 	mov r6,r25
 	
 finishCheckButtons:
@@ -417,34 +419,31 @@ ret ;from rcall CheckButtons
 
 
 Timer1OverflowInterrupt:
-	push r18
 	push r16
-	push r17
 	
 
-	in r0,pinb					;Put value of PINB in R0 (entire byte)
-	bst r0,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
+	in r4,pinb					;Put value of PINB in R0 (entire byte)
+	bst r4,0	;Copy PB0 (bit 0 of PINB) to the T flag (single bit)
 	;The switch is high if the T flag is cleared
 	brtc EasyDifficulty				;Branch of the T flag is cleared
 
 HardDifficulty:
 	;===1.666Hz: 56161, prescaler 1024====
-	ldi r17,0b01100001 ; low byte
-	sts TCNT1L,r17
+	ldi r16,0b01100001 ; low byte
+	sts TCNT1L,r16
 	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
 	sts TCNT1H,r16
 	rjmp OFContinue
 
 EasyDifficulty:
 	;====1HZ: 49911, prescaler 1024====
-	ldi r17,0b11110111 ; low byte
-	sts TCNT1L,r17
+	ldi r16,0b11110111 ; low byte
+	sts TCNT1L,r16
 	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
 	sts TCNT1H,r16	
-	rjmp OFContinue
+;	rjmp OFContinue
 
 OFContinue:
-	pop r17
 	pop r16
 
 	sbi pinc,2 ;Flips the value
@@ -453,8 +452,7 @@ OFContinue:
 	sbis portc,2 ; only check buttons on rising edge
 	rcall CheckButtons
 
-	pop r18
-	mov r18, r6
+	
 loop_seq2:
 	
 	ldi yl, low(0x0100)
@@ -469,7 +467,7 @@ loop_load_buffer2:
 	mov r19, r16
 	subi r19, 0x10
 	neg r19
-	sub r19, r18
+	sub r19, r6
 	brlt noPad2
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
@@ -482,8 +480,9 @@ skipp2:
 	adiw y, 1
 	dec r16
 	brne loop_load_buffer2
-
-
+	
+	
+	
 reti
 	
-COMB_ADDRESS: .dw 0x0500 ;?
+;COMB_ADDRESS: .dw 0x0500 ;?
