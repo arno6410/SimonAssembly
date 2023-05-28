@@ -108,7 +108,7 @@ loop_load_buffer:
 	mov r19, r16
 	subi r19, 0x10
 	neg r19
-	sub r19, r6
+	sub r19, r25
 	brlt noPad
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
@@ -480,7 +480,7 @@ loop_load_buffer2:
 	mov r19, r16
 	subi r19, 0x10
 	neg r19
-	sub r19, r6
+	sub r19, r25
 	brlt noPad2
 	
 	ldi r21, 0x10 ; char 0x10 is an empty segment
