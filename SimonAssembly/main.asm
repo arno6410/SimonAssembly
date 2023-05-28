@@ -24,7 +24,11 @@ carry_cleared:
 	sbi portb,5
 .endmacro
 
+.def showDisplay = r3
+
 init:
+	clr showDisplay
+	com showDisplay
 	; init display
 	sbi ddrb, 3
 	sbi ddrb, 4
@@ -54,15 +58,10 @@ init:
 	sts tccr1a, r20     
 	ldi r20, 0b00000101 ; prescaler /1024
 	sts tccr1b, r20
-
-	/*	ldi r16,0x00 ;To ensure 4Hz with prescaler 64
+	
+	ldi r16,0b01100001 ; low byte
 	sts TCNT1L,r16
-	ldi r16,0X00 ;1011 1101 1100 is 3036 in decimal
-	sts TCNT1H,r16*/
-
-	ldi r17,0b11011100 ;To ensure 1Hz with prescaler 256
-	sts TCNT1L,r17
-	ldi r16,0b00001011 ;1011 1101 1100 is 3036 in decimal
+	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
 	sts TCNT1H,r16
 
 	ldi r16, 0b00000100
@@ -93,7 +92,6 @@ init:
 	;Put combination size in r25
 	ldi r25,0x01
 	mov r6,r25 ;r6 will be used to keep track of the combination
-	/*inc r6*/
 	mov r18, r6
 	/*mov r9,r25	;r9 stores the current winning combination length*/
 loop_seq:
@@ -129,6 +127,7 @@ main:
 
 	
 loop_show:
+	sbrc showDisplay, 1
 	call show_buffer
 	
 	; add here the condition of when to go to the next level
@@ -209,6 +208,10 @@ loop_select_row:
 	
 	ldi r21,0xff
 loop_delay:
+	nop
+	nop
+	nop
+	nop
 	nop
 	dec r21
 	brne loop_delay
@@ -383,6 +386,7 @@ nokeyspressed:
 Correct:
 	; Jump here when correct button is pressed
 
+	cbi portc,3
 	; Load next correct combination from memory
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
@@ -409,6 +413,7 @@ Win:
 
 Reset:
 	;When wrong combination 
+	com showDisplay ; invert r3 -> make display visible
 	ldi zh, high(2*sequence)
 	ldi zl, low(2*sequence)
 	lpm	r24,z+
@@ -451,6 +456,9 @@ EasyDifficulty:
 OFContinue:
 	pop r16
 
+	clr showDisplay
+	
+	
 	sbi pinc,2 ;Flips the value
 	sbi portc,3 ;Turn off LED 2
 	
