@@ -12,7 +12,6 @@ rjmp init
 rjmp timer_overflow_interrupt
 
 .include "m328pdef.inc"		;Load addresses of IO registers
-;.include "test.asm"
 
 .macro shift_reg
 	cbi portb,3
@@ -29,6 +28,7 @@ carry_cleared:
 init:
 	clr show_display
 	com show_display
+	
 	; init display
 	sbi ddrb, 3
 	sbi ddrb, 4
@@ -75,9 +75,6 @@ init:
 	lpm	r24,z+
 	;Put combination size in r25
 	ldi r25,0x01
-	mov r6,r25 ;r6 will be used to keep track of the combination
-	mov r18, r6
-	/*mov r9,r25	;r9 stores the current winning combination length*/
 	rcall load_buffer
 	
 	
@@ -355,8 +352,6 @@ correct:
 	breq win ;reset if combination finished
 	inc r6
 
-	/*cbi portc,2*/
-
 	rjmp finish_check_buttons
 
 not_correct:
@@ -385,20 +380,11 @@ finish_check_buttons:
 timer_overflow_interrupt:
 	push r16
 	
-
-/*	;====1HZ: 49911, prescaler 1024====
-	ldi r16,0b11110111 ; low byte
-	sts TCNT1L,r16
-	ldi r16,0b11000010 ;1100 0010 1111 0111 is 49911 in decimal
-	sts TCNT1H,r16	
-;	rjmp OFContinue*/
-
 	;===1.666Hz: 56161, prescaler 1024====
 	ldi r17,0b01100001 ; low byte
 	sts TCNT1L,r17
 	ldi r16,0b11011011 ;1101 1011 0110 0001 is 56161 in decimal
 	sts TCNT1H,r16
-
 
 	pop r16
 
